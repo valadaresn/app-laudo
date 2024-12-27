@@ -1,0 +1,102 @@
+import * as functions from "firebase-functions";
+import { google } from "googleapis";
+
+// Interfaces
+export interface Question {
+  placeholder: string;
+  answer: string;
+}
+
+export interface Section {
+  name: string;
+  include: boolean;
+  questions: Question[];
+}
+
+export interface Laudo {
+  sections: Section[];
+}
+
+// Função Firebase para extrair o laudo
+export const extractLaudoFromTemplate = functions.https.onRequest(async (req, res) => {
+  try {
+    const docId = req.query.docId as string; // O ID do documento deve ser passado como parâmetro
+    if (!docId) {
+      res.status(400).send("O parâmetro 'docId' é obrigatório.");
+      return;
+    }
+
+    // Autentica e carrega o documento
+    const auth = await google.auth.getClient({
+      scopes: ["https://www.googleapis.com/auth/documents.readonly"],
+    });
+    const docs = google.docs({ version: "v1", auth });
+    const doc = await docs.documents.get({ documentId: docId });
+
+    // Extrai o laudo do documento
+    const laudo = await processDocument(doc.data);
+
+    res.status(200).json(laudo);
+  } catch (error) {
+    console.error("Erro ao processar o documento:", error);
+    res.status(500).send("Erro ao processar o documento.");
+  }
+});
+
+const processDocument = async (doc: any): Promise<Laudo> => {
+  const laudo: Laudo = { sections: [] };
+
+  // Percorre as tabs do documento (supondo que `tabs` seja a estrutura fornecida)
+  if (!doc.tabs) {
+    throw new Error("O documento não contém tabs.");
+  }
+
+  for (const tab of doc.tabs) {
+    const tabContent = extractContentFromTab(tab.documentTab.body);
+
+    const section: Section = {
+      name: tab.tabProperties.title,
+      include: false, // Inicialmente marcada como não incluída
+      questions: extractQuestionsFromText(tabContent),
+    };
+
+    laudo.sections.push(section);
+  }
+
+  return laudo;
+};
+
+const extractContentFromTab = (body: any): string => {
+  const content: string[] = [];
+
+  // Itera sobre o conteúdo do corpo da guia
+  for (const element of body.content) {
+    if (element.paragraph) {
+      content.push(extractTextFromParagraph(element.paragraph));
+    }
+  }
+
+  return content.join("\n");
+};
+
+const extractTextFromParagraph = (paragraph: any): string => {
+  return paragraph.elements
+    .map((elem: any) => elem.textRun?.content || "")
+    .join("");
+};
+
+const extractQuestionsFromText = (text: string): Question[] => {
+  const questions: Question[] = [];
+  const questionPattern = /<<\s*([^<>!#][^<>]*)>>/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = questionPattern.exec(text)) !== null) {
+    questions.push({
+      placeholder: match[1].trim(),
+      answer: "",
+    });
+  }
+
+  return questions;
+};
+
