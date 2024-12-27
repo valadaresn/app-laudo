@@ -7,7 +7,7 @@ app.use(cors({ origin: true }));
 
 // Endpoint simples para retornar "Olá, Mundo!"
 app.get("/", (req, res) => {
-  res.send("Olá, Mundinho!");
+  res.send("Olá, Mundo!");
 });
 
 exports.greetUser = functions.https.onRequest(app);
