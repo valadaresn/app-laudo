@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const app = require("./processDocument");
 
-// Exporte a função para o Firebase
+console.log("Registering greetUser function...");
 exports.greetUser = functions.https.onRequest(app);
+console.log("greetUser function registered.");
