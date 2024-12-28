@@ -1,0 +1,68 @@
+{
+  "sections": [
+    {
+      "name": "primeira guia",
+      "include": true,
+      "questions": [
+        {
+          "placeholder": "pergunta g1",
+          "answer": "resp1.1"
+        },
+        {
+          "placeholder": "pergunta g1.2",
+          "answer": "resp2.2"
+        }
+      ]
+    },
+    {
+      "name": "Guia 6",
+      "include": false,
+      "questions": []
+    },
+    {
+      "name": "segumda guia",
+      "include": true,
+      "questions": [
+        {
+          "placeholder": "pergunta g2",
+          "answer": "resp2.1"
+        },
+        {
+          "placeholder": "pergunta g2.1",
+          "answer": "resp2.2"
+        }
+      ]
+    },
+    {
+      "name": "terceira guia",
+      "include": true,
+      "questions": [
+        {
+          "placeholder": "pergunta g3",
+          "answer": ""
+        },
+        {
+          "placeholder": "pergunta g3.1",
+          "answer": ""
+        },
+        {
+          "placeholder": "pergunta g33",
+          "answer": ""
+        },
+        {
+          "placeholder": "pergunta g3.4",
+          "answer": ""
+        },
+        {
+          "placeholder": "pergunta g35",
+          "answer": ""
+        }
+      ]
+    },
+    {
+      "name": "Guia 4",
+      "include": false,
+      "questions": []
+    }
+  ]
+}
