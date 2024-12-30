@@ -13,7 +13,3 @@ fs.readdirSync(functionsPath).forEach(file => {
         console.log(`${functionName} function registered.`);
     }
 });
-
-// Adicionando a rota específica para read-doc
-const processDocumentSemGuias = require('./corretos/processDocumentSemGuias');
-exports.readDoc = functions.https.onRequest(processDocumentSemGuias);

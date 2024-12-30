@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laudo Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+        }
+        .question {
+            margin-bottom: 10px;
+        }
+        .question label {
+            display: inline-block;
+            width: 300px;
+        }
+        .question input {
+            width: 300px;
+        }
+        #output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script>
+        async function fetchLaudo() {
+            try {
+                const response = await fetch('http://127.0.0.1:5001/app-laudo-31fb5/us-central1/greetUser/read-doc');
+                const data = await response.json();
+                const laudo = data.laudo;
+
+                const form = document.getElementById('laudoForm');
+
+                laudo.forEach((section, sectionIndex) => {
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'section';
+
+                    const sectionHeader = document.createElement('div');
+                    sectionHeader.className = 'section-header';
+
+                    const includeCheckbox = document.createElement('input');
+                    includeCheckbox.type = 'checkbox';
+                    includeCheckbox.id = `include-${sectionIndex}`;
+                    includeCheckbox.name = `include-${sectionIndex}`;
+                    includeCheckbox.checked = true; // Default to checked
+
+                    includeCheckbox.addEventListener('change', (event) => {
+                        const questionsDiv = sectionDiv.querySelector('.questions');
+                        if (event.target.checked) {
+                            questionsDiv.style.display = 'block';
+                        } else {
+                            questionsDiv.style.display = 'none';
+                        }
+                    });
+
+                    const sectionTitle = document.createElement('h2');
+                    sectionTitle.textContent = section.subject;
+
+                    sectionHeader.appendChild(includeCheckbox);
+                    sectionHeader.appendChild(sectionTitle);
+
+                    sectionDiv.appendChild(sectionHeader);
+
+                    const questionsDiv = document.createElement('div');
+                    questionsDiv.className = 'questions';
+
+                    section.questions.forEach((question, questionIndex) => {
+                        const questionDiv = document.createElement('div');
+                        questionDiv.className = 'question';
+
+                        const label = document.createElement('label');
+                        label.textContent = question;
+                        label.htmlFor = `question-${sectionIndex}-${questionIndex}`;
+                        questionDiv.appendChild(label);
+
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.id = `question-${sectionIndex}-${questionIndex}`;
+                        input.name = `question-${sectionIndex}-${questionIndex}`;
+                        questionDiv.appendChild(input);
+
+                        questionsDiv.appendChild(questionDiv);
+                    });
+
+                    sectionDiv.appendChild(questionsDiv);
+                    form.appendChild(sectionDiv);
+                });
+
+                const submitButton = document.createElement('button');
+                submitButton.type = 'button';
+                submitButton.textContent = 'Submit';
+                submitButton.addEventListener('click', () => handleSubmit(laudo));
+                form.appendChild(submitButton);
+            } catch (error) {
+                console.error('Error fetching laudo:', error);
+            }
+        }
+
+        async function handleSubmit(laudo) {
+            const form = document.getElementById('laudoForm');
+            const newLaudo = laudo.map((section, sectionIndex) => {
+                const include = document.getElementById(`include-${sectionIndex}`).checked;
+                const questions = section.questions.map((question, questionIndex) => {
+                    const answer = form[`question-${sectionIndex}-${questionIndex}`].value;
+                    return { placeholder: question, answer: answer };
+                });
+                return { name: section.subject, include: include, questions: questions };
+            });
+
+            const response = await fetch('http://127.0.0.1:5001/app-laudo-31fb5/us-central1/createLaudoDocument/create-laudo-doc', {
+                
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ laudo: { sections: newLaudo } }),
+            });
+
+            const result = await response.json();
+            const output = document.getElementById('output');
+            if (response.ok) {
+                output.innerHTML = `<a href="${result.url}" target="_blank">Acessar Documento Gerado</a>`;
+            } else {
+                output.textContent = JSON.stringify(result, null, 2);
+            }
+        }
+
+        window.onload = fetchLaudo;
+    </script>
+</head>
+<body>
+    <h1>Laudo Form</h1>
+    <form id="laudoForm">
+        <!-- Questions will be dynamically added here -->
+    </form>
+    <div id="output"></div>
+</body>
+</html>

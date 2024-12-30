@@ -37,8 +37,9 @@ async function getDocumentContent(auth, documentId) {
     const laudo = [];
 
     function extractTextFromTab(tab) {
-        const subject = tab.tabProperties?.title || "Untitled Tab";
+        const subject = tab.tabProperties?.title || "Guia sem título";
         let text = '';
+        const questions = [];
 
         if (tab.documentTab && tab.documentTab.body && tab.documentTab.body.content) {
             for (const element of tab.documentTab.body.content) {
@@ -52,9 +53,16 @@ async function getDocumentContent(auth, documentId) {
             }
         }
 
+        // Extrair textos entre chaves
+        const regex = /\{([^}]+)\}/g;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            questions.push(match[1].trim());
+        }
+
         laudo.push({
             subject: subject,
-            text: text,
+            questions: questions,
         });
 
         if (tab.childTabs && tab.childTabs.length > 0) {
@@ -71,7 +79,7 @@ async function getDocumentContent(auth, documentId) {
     return laudo;
 }
 
-app.get("/extract-text", async (req, res) => {
+app.get("/read-doc", async (req, res) => {
     console.log(`Received request to read document with ID: ${DOCUMENT_ID}`);
     try {
         const auth = await authorize();
