@@ -7,6 +7,7 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 functions/service-account.json
+functions/corretos/service-account.json
 
 
 # Firebase cache
