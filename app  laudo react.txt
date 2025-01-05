@@ -1,0 +1,114 @@
+Projeto 
+fazer apenas um type laudo. campos requeirodos
+ETAPAS:
+-CADASTRO
+Autor *
+Reu *
+IdentificadorPericia
+Processo *
+DataAudiencia
+EmailAdovgados
+Aceita?
+Objeto
+UrlProcessoPdf (google drive)
+
+-AGENDAMENTO
+DataPericiaSugeridaIA
+DataPericiaSugeridaPerito
+ContatosRealizados
+DataPericiaOkReclamante
+DataPericiaOkReu
+DataPericiaDefintiva
+
+-LAUDO
+LaudoUrl
+LaudoEnviado?l
+Recebido
+ProgressoCadastro
+ProgessoLaudo
+ValorHonorario
+Recebido
+fim etapas
+
+Fases: Aceite: Cadastar, Agendamento, Pericia, Laudo, Status (inicado, andamento)
+Recursos
+
+TELAS DO SISTEMA
+-Processos
+	Form
+	Kambam
+	Processo details
+
+FLUXO KAMBAM
+Aceite
+	Confirmar ou tela aceite
+Status
+
+obs: se clicar no card abre o form abaixo nas respectivas colunas
+
+
+FLUXO KAMBAM
+COLUNA CADASTRAR	
+	Form com esses campos: 
+		Autor 
+		Reu 
+		IdentificadorPericia
+		Processo 
+		DaataAudiencia
+		EmailAdvogadoReu
+		EmailAdvogadoAutor
+		AceitaRealizado?
+		ObjetoPericia
+		UrlProcessoPdf (google drive)
+
+		ProgressoCadastro
+COLUNA AGENDAMENTO		
+		form com tabs. uma aba com Dados do Processo
+		tab com esses campos editaveis
+		DataPericiaSugeridaIA
+		DataPericiaSugeridaPerito
+		ContatosRealizados
+		DataPericiaOkReclamante
+		DataPericiaOkReu
+		DataPericiaDefintiva
+
+		
+COLUNA LAUDO
+		form com as tabs: 
+		tab com Dados do Processo 
+		tabs uma aba com campos relevantes do Agendamento
+		tab com esses campos editáveis:
+		LaudoUrl
+		LaudoEnviadoEm (data hora)	
+		ProgessoLaudo
+COLUNA RECEBIMENTOS
+		form com:
+	        tabs. uma aba com Dados do Processo 
+		tabs uma aba com campos relevantes do Agendamento
+		tabs uma aba com campos relevantes do Laudo		
+
+		tab com esses campos editáveis:
+			Recebido	
+			ValorHonorario
+			Recebido
+
+
+obs: nós podemos ao invés de fazer:
+	        tabs. uma aba com Dados do Processo 
+		tabs uma aba com campos relevantes do Agendamento
+		tabs uma aba com campos relevantes do Laudo		
+
+
+
+	ir pra coluna cadastrar abre tela de cadastro. 
+	ação : vai pra Go tela fase cadastros
+Só Apos definido objeto, q não é requerido, status avança p Agendamento
+Podemos ter progresso Agendamentode pendente, andamento,
+Escolha Minuta
+após cadastro finalizado, abre tela de agendamento. 
+Pericia
+Laudo
+Recursos
+
+
+
