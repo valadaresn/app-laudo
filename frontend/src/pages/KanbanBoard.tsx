@@ -7,7 +7,7 @@ import { ICase } from '../models/ICase';
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<ICase | null>(null);
-    const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertiseReport' | 'payment'>('register');
+    const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
     const [cards, setCards] = useState<ICase[]>([]);
 
     useEffect(() => {
@@ -19,7 +19,7 @@ const KanbanBoard: React.FC = () => {
         return () => unsubscribe();
     }, []);
 
-    const handleCardClick = (card: ICase, tab: 'register' | 'scheduling' | 'expertiseReport' | 'payment') => {
+    const handleCardClick = (card: ICase, tab: 'register' | 'scheduling' | 'expertise' | 'payment') => {
         if (selectedCard?.id === card.id) {
             setFormOpen(false);
             setSelectedCard(null);
@@ -35,7 +35,7 @@ const KanbanBoard: React.FC = () => {
         setSelectedCard(null);
     };
 
-    const renderCards = (status: ICase['status'], tab: 'register' | 'scheduling' | 'expertiseReport' | 'payment') => {
+    const renderCards = (status: ICase['status'], tab: 'register' | 'scheduling' | 'expertise' | 'payment') => {
         return cards
             .filter(card => card.status === status)
             .map((card, index) => (
@@ -63,11 +63,11 @@ const KanbanBoard: React.FC = () => {
             </div>
             <div className="column">
                 <h3>PERICIA</h3>
-                {renderCards('PERICIA', 'expertiseReport')}
+                {renderCards('PERICIA', 'expertise')}
             </div>
             <div className="column">
                 <h3>LAUDO</h3>
-                {renderCards('LAUDO', 'expertiseReport')}
+                {renderCards('LAUDO', 'expertise')}
             </div>
             {isFormOpen && (
                 <CaseForm card={selectedCard} onClose={handleCloseForm} initialTab={activeTab} />

@@ -1,47 +1,60 @@
-// 1. Sub-interface: Register (CADASTRAR)
-export interface IRegister {
-  plaintiff: string;             // Autor
-  defendant: string;             // Réu
-  expertiseIdentifier: string;   // IdentificadorPericia
-  caseNumber: string;            // Processo
-  hearingDate: string | Date;    // DataAudiencia
-  defendantLawyerEmail: string;  // EmailAdvogadoReu
-  plaintiffLawyerEmail: string;  // EmailAdvogadoAutor
-  acceptedPerformed: boolean;    // AceitaRealizado?
-  expertiseSubject: string;      // ObjetoPericia
-  casePdfUrl: string;            // UrlProcessoPdf
-  registerProgress: number;      // ProgressoCadastro
-}
+import { z } from 'zod';
 
-// 2. Sub-interface: Scheduling (AGENDAMENTO)
-export interface IScheduling {
-  suggestedExpertiseDateAI?: string | Date;
-  suggestedExpertiseDateExpert?: string | Date;
-  contactsPerformed?: boolean;
-  expertiseDateConfirmedByPlaintiff?: boolean;
-  expertiseDateConfirmedByDefendant?: boolean;
-  finalExpertiseDate?: string | Date;
-}
+export const RegisterSchema = z.object({
+    plaintiff: z.string().default(''),
+    defendant: z.string().default(''),
+    expertiseIdentifier: z.string().default(''),
+    caseNumber: z.string().default(''),
+    hearingDate: z.string().default(''),
+    defendantLawyerEmail: z.string().default(''),
+    plaintiffLawyerEmail: z.string().default(''),
+    acceptedPerformed: z.boolean().default(false),
+    expertiseSubject: z.string().default(''),
+    casePdfUrl: z.string().default(''),
+    registerProgress: z.number().default(0)
+});
 
-// 3. Sub-interface: Expertise Report (LAUDO)
-export interface IExpertiseReport {
-  expertiseReportUrl?: string;       // LaudoUrl
-  expertiseReportSentAt?: string | Date; 
-  expertiseReportProgress?: number;  // ProgessoLaudo
-}
+export const SchedulingSchema = z.object({
+    suggestedExpertiseDateAI: z.string().default(''),
+    suggestedExpertiseDateExpert: z.string().default(''),
+    contactsPerformed: z.boolean().default(false),
+    expertiseDateConfirmedByPlaintiff: z.boolean().default(false),
+    expertiseDateConfirmedByDefendant: z.boolean().default(false),
+    finalExpertiseDate: z.string().default('')
+});
 
-// 4. Sub-interface: Payment (RECEBIMENTOS)
-export interface IPayment {
-  isPaid?: boolean;    // Recebido
-  feeAmount?: number;  // ValorHonorario
-}
+export const ExpertiseReportSchema = z.object({
+    expertiseReportUrl: z.string().default(''),
+    expertiseReportSentAt: z.string().default(''),
+    expertiseReportProgress: z.number().default(0)
+});
 
-// 5. Interface principal, unindo as sub-interfaces
-export interface ICase {
-  id?: string; // Document ID from Firestore
-  status: 'CADASTRO' | 'AGENDAMENTO' | 'PERICIA' | 'LAUDO' | 'RECEBIMENTO'; // Status do processo
-  register: IRegister;                 // Dados da coluna "CADASTRAR"
-  scheduling?: IScheduling;            // Dados da coluna "AGENDAMENTO"
-  expertiseReport?: IExpertiseReport;  // Dados da coluna "LAUDO"
-  payment?: IPayment;                  // Dados da coluna "RECEBIMENTOS"
-}
+export const PaymentSchema = z.object({
+    isPaid: z.boolean().default(false),
+    feeAmount: z.number().default(0)
+});
+
+export const ExpertiseSchema = z.object({
+    participants: z.string().default(''),
+    procedure: z.string().default(''),
+    parameters: z.string().default(''),
+    analysis: z.string().default(''),
+    briefConclusion: z.string().default('')
+});
+
+export const CaseSchema = z.object({
+    id: z.string().optional(),
+    status: z.enum(['CADASTRO', 'AGENDAMENTO', 'PERICIA', 'LAUDO', 'RECEBIMENTO']).default('CADASTRO'),
+    register: RegisterSchema,
+    scheduling: SchedulingSchema,
+    expertiseReport: ExpertiseReportSchema,
+    payment: PaymentSchema,
+    expertise: ExpertiseSchema.optional()
+});
+
+export type IRegister = z.infer<typeof RegisterSchema>;
+export type IScheduling = z.infer<typeof SchedulingSchema>;
+export type IExpertiseReport = z.infer<typeof ExpertiseReportSchema>;
+export type IPayment = z.infer<typeof PaymentSchema>;
+export type IExpertise = z.infer<typeof ExpertiseSchema>;
+export type ICase = z.infer<typeof CaseSchema>;
