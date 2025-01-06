@@ -1,7 +1,6 @@
 import React from 'react';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { ICase } from '../../models/ICase';
-import { Checkbox, FormControlLabel, TextField } from '@mui/material';
 
 interface PaymentFormProps {
     register: UseFormRegister<ICase>;
@@ -10,22 +9,18 @@ interface PaymentFormProps {
 
 const PaymentForm: React.FC<PaymentFormProps> = ({ register, errors }) => (
     <>
-        <FormControlLabel
-            control={
-                <Checkbox
-                    {...register('payment.isPaid')}
-                />
-            }
-            label="Recebido"
-        />
         <div className="form-group">
-            <TextField
-                label="Valor Honorário"
+            <label>Recebido</label>
+            <input
+                type="checkbox"
+                {...register('payment.isPaid')}
+            />
+        </div>
+        <div className="form-group">
+            <label>Valor Honorário</label>
+            <input
                 type="number"
                 {...register('payment.feeAmount')}
-                error={!!errors.payment?.feeAmount}
-                helperText={errors.payment?.feeAmount?.message}
-                fullWidth
             />
         </div>
     </>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from '@mui/material';
 
 interface FormHeaderProps {
     isDirty: boolean;
@@ -11,19 +10,30 @@ const FormHeader: React.FC<FormHeaderProps> = ({ isDirty, handleSave, card }) =>
     return (
         <div className="form-header">
             <h2>{card ? 'Editar Caso' : 'Novo Caso'}</h2>
-            <Button
-                variant="contained"
-                color="primary"
+            <button
+                className="save-button"
                 onClick={handleSave}
                 disabled={!isDirty}
             >
                 Salvar
-            </Button>
+            </button>
             <style>{`
                 .form-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                }
+                .save-button {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 4px;
+                    background-color: #007bff;
+                    color: white;
+                    cursor: pointer;
+                }
+                .save-button:disabled {
+                    background-color: #ccc;
+                    cursor: not-allowed;
                 }
             `}</style>
         </div>

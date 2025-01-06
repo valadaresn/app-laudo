@@ -1,6 +1,7 @@
 import React from 'react';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { ICase } from '../../models/ICase';
+import { TextField, FormControlLabel, Switch, Box } from '@mui/material';
 
 interface SchedulingFormProps {
     register: UseFormRegister<ICase>;
@@ -9,48 +10,75 @@ interface SchedulingFormProps {
 
 const SchedulingForm: React.FC<SchedulingFormProps> = ({ register, errors }) => (
     <>
-        <div className="form-group">
-            <label>Data Sugerida pela IA</label>
-            <input
+        <Box mb={2}>
+            <TextField
+                label="Data Sugerida pela IA"
                 type="date"
                 {...register('scheduling.suggestedExpertiseDateAI')}
+                fullWidth
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                error={!!errors.scheduling?.suggestedExpertiseDateAI}
+                helperText={errors.scheduling?.suggestedExpertiseDateAI?.message}
             />
-        </div>
-        <div className="form-group">
-            <label>Data Sugerida pelo Perito</label>
-            <input
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Data Sugerida pelo Perito"
                 type="date"
                 {...register('scheduling.suggestedExpertiseDateExpert')}
+                fullWidth
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                error={!!errors.scheduling?.suggestedExpertiseDateExpert}
+                helperText={errors.scheduling?.suggestedExpertiseDateExpert?.message}
             />
-        </div>
-        <div className="form-group">
-            <label>Contatos Realizados</label>
-            <input
-                type="checkbox"
-                {...register('scheduling.contactsPerformed')}
+        </Box>
+        <Box mb={2}>
+            <FormControlLabel
+                control={
+                    <Switch
+                        {...register('scheduling.contactsPerformed')}
+                    />
+                }
+                label="Contatos Realizados"
             />
-        </div>
-        <div className="form-group">
-            <label>Data Confirmada pelo Reclamante</label>
-            <input
-                type="checkbox"
-                {...register('scheduling.expertiseDateConfirmedByPlaintiff')}
+        </Box>
+        <Box mb={2}>
+            <FormControlLabel
+                control={
+                    <Switch
+                        {...register('scheduling.expertiseDateConfirmedByPlaintiff')}
+                    />
+                }
+                label="Data Confirmada pelo Reclamante"
             />
-        </div>
-        <div className="form-group">
-            <label>Data Confirmada pelo Réu</label>
-            <input
-                type="checkbox"
-                {...register('scheduling.expertiseDateConfirmedByDefendant')}
+        </Box>
+        <Box mb={2}>
+            <FormControlLabel
+                control={
+                    <Switch
+                        {...register('scheduling.expertiseDateConfirmedByDefendant')}
+                    />
+                }
+                label="Data Confirmada pelo Réu"
             />
-        </div>
-        <div className="form-group">
-            <label>Data Definitiva da Perícia</label>
-            <input
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Data Definitiva da Perícia"
                 type="date"
                 {...register('scheduling.finalExpertiseDate')}
+                fullWidth
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                error={!!errors.scheduling?.finalExpertiseDate}
+                helperText={errors.scheduling?.finalExpertiseDate?.message}
             />
-        </div>
+        </Box>
     </>
 );
 

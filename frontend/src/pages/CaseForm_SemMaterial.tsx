@@ -7,7 +7,6 @@ import { doc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import Tabs from '../components/caseForm/Tabs';
 import FormHeader from '../components/caseForm/FormHeader';
 import TabContent from '../components/caseForm/TabContent';
-import { Container } from '@mui/material';
 
 const defaultValues = CaseSchema.parse({
     register: {},
@@ -52,7 +51,9 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
         } else {
             await addDoc(collection(db, 'cases'), currentValues);
         }
+        // Após salvar, pode limpar o estado de "dirty"
         reset(currentValues);
+        //onClose();
     };
 
     const handleEdit = () => {
@@ -65,11 +66,12 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
 
     return (
         <FormProvider {...methods}>
-            <Container style={{ height: '80vh' }}>
+            <div className="form-container">
                 <FormHeader isDirty={isDirty} handleSave={handleSave} card={card} />
                 <Tabs
                     cardStatus={card?.status}                    
                     finalExpertiseDate={finalExpertiseDate}
+                    //caso preenchido conclusão aba laudo aparecerá
                     briefConclusion={briefConclusion}
                     expertiseReportUrl={expertiseReportUrl}
                     activeTab={activeTab}
@@ -91,11 +93,11 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
                         border: 1px solid #ccc;
                         border-radius: 4px;
                         background-color: #f4f4f4;
-                        max-width: 800px;
+                        max-width: 600px;
                         margin: 20px auto;
                     }
                 `}</style>
-            </Container>
+            </div>
         </FormProvider>
     );
 };

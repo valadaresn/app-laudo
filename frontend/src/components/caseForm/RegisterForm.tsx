@@ -1,6 +1,7 @@
 import React from 'react';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { ICase } from '../../models/ICase';
+import { TextField, Button, Box } from '@mui/material';
 
 interface RegisterFormProps {
     register: UseFormRegister<ICase>;
@@ -12,66 +13,75 @@ interface RegisterFormProps {
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ register, errors, isEditing, handleEdit, handleCancel }) => (
     <>
-        <div className="form-group">
-            <label>Autor</label>
-            <input
-                type="text"
+        <Box mb={2}>
+            <TextField
+                label="Autor"
                 {...register('register.plaintiff', { required: 'Autor é obrigatório' })}
+                error={!!errors.register?.plaintiff}
+                helperText={errors.register?.plaintiff?.message}
                 disabled={!isEditing}
+                fullWidth
             />
-            {errors.register?.plaintiff && <span className="error">{errors.register.plaintiff.message}</span>}
-        </div>
-        <div className="form-group">
-            <label>Réu</label>
-            <input
-                type="text"
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Réu"
                 {...register('register.defendant', { required: 'Réu é obrigatório' })}
+                error={!!errors.register?.defendant}
+                helperText={errors.register?.defendant?.message}
                 disabled={!isEditing}
+                fullWidth
             />
-            {errors.register?.defendant && <span className="error">{errors.register.defendant.message}</span>}
-        </div>
-        <div className="form-group">
-            <label>Identificador Perícia</label>
-            <input
-                type="text"
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Identificador Perícia"
                 {...register('register.expertiseIdentifier')}
                 disabled={!isEditing}
+                fullWidth
             />
-        </div>
-        <div className="form-group">
-            <label>Processo</label>
-            <input
-                type="text"
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Processo"
                 {...register('register.caseNumber', { required: 'Processo é obrigatório' })}
+                error={!!errors.register?.caseNumber}
+                helperText={errors.register?.caseNumber?.message}
                 disabled={!isEditing}
+                fullWidth
             />
-            {errors.register?.caseNumber && <span className="error">{errors.register.caseNumber.message}</span>}
-        </div>
-        <div className="form-group">
-            <label>Data Audiência</label>
-            <input
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Data Audiência"
                 type="date"
                 {...register('register.hearingDate')}
                 disabled={!isEditing}
+                fullWidth
+                InputLabelProps={{
+                    shrink: true,
+                }}
             />
-        </div>
-        <div className="form-group">
-            <label>Email Adv. Réu</label>
-            <input
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Email Adv. Réu"
                 type="email"
                 {...register('register.defendantLawyerEmail')}
                 disabled={!isEditing}
+                fullWidth
             />
-        </div>
-        <div className="form-group">
-            <label>Email Adv. Autor</label>
-            <input
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Email Adv. Autor"
                 type="email"
                 {...register('register.plaintiffLawyerEmail')}
                 disabled={!isEditing}
+                fullWidth
             />
-        </div>
-        <div className="form-group">
+        </Box>
+        <Box mb={2}>
             <label>
                 <input
                     type="checkbox"
@@ -80,32 +90,33 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ register, errors, isEditing
                 />
                 Aceita?
             </label>
-        </div>
-        <div className="form-group">
-            <label>Objeto</label>
-            <input
-                type="text"
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="Objeto"
                 {...register('register.expertiseSubject')}
                 disabled={!isEditing}
+                fullWidth
             />
-        </div>
-        <div className="form-group">
-            <label>URL do Processo PDF</label>
-            <input
+        </Box>
+        <Box mb={2}>
+            <TextField
+                label="URL do Processo PDF"
                 type="url"
                 {...register('register.casePdfUrl')}
                 disabled={!isEditing}
+                fullWidth
             />
-        </div>
+        </Box>
         {isEditing ? (
-            <div className="form-actions">
-                <button type="button" onClick={handleCancel}>Cancelar</button>
-                <button type="submit">Salvar</button>
-            </div>
+            <Box mt={2} display="flex" justifyContent="space-between">
+                <Button variant="outlined" onClick={handleCancel}>Cancelar</Button>
+                <Button type="submit" variant="contained">Salvar</Button>
+            </Box>
         ) : (
-            <div className="form-actions">
-                <button type="button" onClick={handleEdit}>Editar</button>
-            </div>
+            <Box mt={2} display="flex" justifyContent="flex-end">
+                <Button variant="outlined" onClick={handleEdit}>Editar</Button>
+            </Box>
         )}
     </>
 );

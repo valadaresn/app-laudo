@@ -3,7 +3,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
-import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box } from '@mui/material';
+import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; 
 import { Swiper, SwiperSlide } from 'swiper/react';
 // ► Importações recomendadas pela doc oficial do Swiper v10+
@@ -11,7 +11,8 @@ import 'swiper/css';              // CSS base
 import 'swiper/css/navigation';   // Se for usar controles de navegação
 import 'swiper/css/pagination';   // Se for usar paginação
 // ► Para usar navegação/paginação, importe e registre os módulos
-import { Navigation, Pagination } from 'swiper/modules';
+//import Navigation from 'swiper/modules/navigation';
+//import Pagination from 'swiper/modules/pagination';
 
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
@@ -19,7 +20,6 @@ const KanbanBoard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
     const [cards, setCards] = useState<ICase[]>([]);
     const [activeStep, setActiveStep] = useState(0);
-    const [isModal, setIsModal] = useState(false); // Estado para controlar o checkbox
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -120,11 +120,8 @@ const KanbanBoard: React.FC = () => {
             <Typography variant="h2" gutterBottom>
                 KANBAN BOARD
             </Typography>
-            <FormControlLabel
-                control={<Checkbox checked={isModal} onChange={(e) => setIsModal(e.target.checked)} />}
-                label="Exibir CaseForm em Modal"
-            />
             {isMobile ? (
+                // ► Registre aqui os módulos do Swiper (Navigation/Pagination, se quiser)
                 <Swiper
                     modules={[Navigation, Pagination]}
                     navigation
@@ -134,63 +131,13 @@ const KanbanBoard: React.FC = () => {
                     onSlideChange={(swiper) => setActiveStep(swiper.activeIndex)}
                     onSwiper={(swiper) => setActiveStep(swiper.activeIndex)}
                 >
-                    <SwiperSlide>
-                        <Grid xs={12} md={3}>
-                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
-                                <Typography variant="h6" gutterBottom>
-                                    Cadastro
-                                </Typography>
-                                {renderCards('CADASTRO', 'register')}
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => {
-                                        setSelectedCard(null);
-                                        setFormOpen(true);
-                                        setActiveTab('register');
-                                    }}
-                                >
-                                    Novo
-                                </Button>
-                            </Paper>
-                        </Grid>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <Grid xs={12} md={3}>
-                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
-                                <Typography variant="h6" gutterBottom>
-                                    Agendamento
-                                </Typography>
-                                {renderCards('AGENDAMENTO', 'scheduling')}
-                            </Paper>
-                        </Grid>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <Grid xs={12} md={3}>
-                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
-                                <Typography variant="h6" gutterBottom>
-                                    Perícia
-                                </Typography>
-                                {renderCards('PERICIA', 'expertise')}
-                            </Paper>
-                        </Grid>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <Grid xs={12} md={3}>
-                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
-                                <Typography variant="h6" gutterBottom>
-                                    Laudo
-                                </Typography>
-                                {renderCards('LAUDO', 'expertise')}
-                            </Paper>
-                        </Grid>
-                    </SwiperSlide>
+                    <SwiperSlide>{columns}</SwiperSlide>
                 </Swiper>
             ) : (
                 <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
                     {columns}
                     <Grid xs={12} md={3}>
-                        {isFormOpen && !isModal && (
+                        {isFormOpen && (
                             <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
                                 <CaseForm
                                     card={selectedCard}
@@ -201,31 +148,6 @@ const KanbanBoard: React.FC = () => {
                         )}
                     </Grid>
                 </Grid>
-            )}
-            {isFormOpen && isModal && (
-                <Modal open={isFormOpen} onClose={handleCloseForm}>
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: '85%',
-                            maxHeight: '90%',
-                            bgcolor: 'background.paper',
-                            boxShadow: 24,
-                            p: 0,
-                            overflow: 'auto',
-                            maxWidth: 700 // Adicionando largura máxima
-                        }}
-                    >
-                        <CaseForm
-                            card={selectedCard}
-                            onClose={handleCloseForm}
-                            initialTab={activeTab}
-                        />
-                    </Box>
-                </Modal>
             )}
             <style>{`
                 .card {

@@ -6,7 +6,6 @@ import SchedulingForm from './SchedulingForm';
 import ReportForm from './ReportForm';
 import PaymentForm from './PaymentForm';
 import { ExpertiseParticipants, ExpertiseProcedure, ExpertiseParameters, ExpertiseAnalysis, ExpertiseBriefConclusion } from './ExpertiseForm';
-import { TextField, Button } from '@mui/material';
 
 interface TabContentProps {
     activeTab: string;
@@ -16,7 +15,6 @@ interface TabContentProps {
     handleEdit: () => void;
     handleCancel: () => void;
 }
-
 const TabContent: React.FC<TabContentProps> = ({ activeTab, register, errors, isEditing, handleEdit, handleCancel }) => {
     return (
         <>
@@ -34,13 +32,10 @@ const TabContent: React.FC<TabContentProps> = ({ activeTab, register, errors, is
             )}
             {activeTab === 'expertise' && (
                 <div className="form-group">
-                    <TextField
-                        label="Data Perícia"
+                    <label>Data Perícia</label>
+                    <input
                         type="date"
                         {...register('scheduling.finalExpertiseDate')}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
                     />
                 </div>
             )}

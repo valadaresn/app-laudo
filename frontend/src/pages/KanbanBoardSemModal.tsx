@@ -3,7 +3,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
-import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box } from '@mui/material';
+import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; 
 import { Swiper, SwiperSlide } from 'swiper/react';
 // ► Importações recomendadas pela doc oficial do Swiper v10+
@@ -19,7 +19,6 @@ const KanbanBoard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
     const [cards, setCards] = useState<ICase[]>([]);
     const [activeStep, setActiveStep] = useState(0);
-    const [isModal, setIsModal] = useState(false); // Estado para controlar o checkbox
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -120,10 +119,6 @@ const KanbanBoard: React.FC = () => {
             <Typography variant="h2" gutterBottom>
                 KANBAN BOARD
             </Typography>
-            <FormControlLabel
-                control={<Checkbox checked={isModal} onChange={(e) => setIsModal(e.target.checked)} />}
-                label="Exibir CaseForm em Modal"
-            />
             {isMobile ? (
                 <Swiper
                     modules={[Navigation, Pagination]}
@@ -190,7 +185,7 @@ const KanbanBoard: React.FC = () => {
                 <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
                     {columns}
                     <Grid xs={12} md={3}>
-                        {isFormOpen && !isModal && (
+                        {isFormOpen && (
                             <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
                                 <CaseForm
                                     card={selectedCard}
@@ -201,31 +196,6 @@ const KanbanBoard: React.FC = () => {
                         )}
                     </Grid>
                 </Grid>
-            )}
-            {isFormOpen && isModal && (
-                <Modal open={isFormOpen} onClose={handleCloseForm}>
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: '85%',
-                            maxHeight: '90%',
-                            bgcolor: 'background.paper',
-                            boxShadow: 24,
-                            p: 0,
-                            overflow: 'auto',
-                            maxWidth: 700 // Adicionando largura máxima
-                        }}
-                    >
-                        <CaseForm
-                            card={selectedCard}
-                            onClose={handleCloseForm}
-                            initialTab={activeTab}
-                        />
-                    </Box>
-                </Modal>
             )}
             <style>{`
                 .card {

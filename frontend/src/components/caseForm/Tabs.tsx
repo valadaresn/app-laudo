@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Tab, Tabs as MuiTabs, Tab as MuiTab } from '@mui/material';
 
 interface Tab {
     key: string;
@@ -15,13 +16,23 @@ interface TabsProps {
 }
 
 const Tabs: React.FC<TabsProps> = ({ cardStatus, finalExpertiseDate, briefConclusion, expertiseReportUrl, activeTab, setActiveTab }) => {
-    const [showExpertiseTabs, setShowExpertiseTabs] = useState(false);
+    const [showExpertiseTabs, setShowExpertiseTabs] = useState(true);
+    const tabsContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (expertiseReportUrl) {
             setShowExpertiseTabs(false);
         }
     }, [expertiseReportUrl]);
+
+    useEffect(() => {
+        if (showExpertiseTabs && tabsContainerRef.current) {
+            const lastTab = tabsContainerRef.current.querySelector('.MuiTab-root:last-child');
+            if (lastTab) {
+                lastTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'end' });
+            }
+        }
+    }, [showExpertiseTabs]);
 
     const renderTabs = () => {
         const tabs: Tab[] = [];
@@ -33,18 +44,20 @@ const Tabs: React.FC<TabsProps> = ({ cardStatus, finalExpertiseDate, briefConclu
                 break;
             case 'AGENDAMENTO':
                 tabs.push({ key: 'register', label: 'Cadastro' });
-                tabs.push({ key: 'scheduling', label: 'Agendamento' });
+                // Ocultar a aba de agendamento
+                 tabs.push({ key: 'scheduling', label: 'Agendamento' });
                 break;
             case 'PERICIA':
                 tabs.push({ key: 'register', label: 'Cadastro' });
+                
                 tabs.push({ key: 'scheduling', label: 'Agendamento' });
                 tabs.push({ key: 'expertise', label: 'Perícia' });
                 if (showExpertiseTabs && !expertiseReportUrl) {
-                    tabs.push({ key: 'participants', label: 'Participants' });
-                    tabs.push({ key: 'procedure', label: 'Procedure' });
-                    tabs.push({ key: 'parameters', label: 'Parameters' });
-                    tabs.push({ key: 'analysis', label: 'Analysis' });
-                    tabs.push({ key: 'briefConclusion', label: 'Brief Conclusion' });
+                    tabs.push({ key: 'participants', label: 'Participantes' });
+                    tabs.push({ key: 'procedure', label: 'Procedimento' });
+                    tabs.push({ key: 'parameters', label: 'Parâmetro' });
+                    tabs.push({ key: 'analysis', label: 'Análise' });
+                    tabs.push({ key: 'briefConclusion', label: 'Conclusão' });
                 }
                 break;
             case 'LAUDO':
@@ -73,95 +86,38 @@ const Tabs: React.FC<TabsProps> = ({ cardStatus, finalExpertiseDate, briefConclu
     };
 
     return (
-        <div className="tabs-container">
-            <div className="tabs">
+        <div className="tabs-container" ref={tabsContainerRef}>
+            <MuiTabs
+                value={activeTab}
+                onChange={(event, newValue) => setActiveTab(newValue)}
+                variant="scrollable"
+                scrollButtons="auto"
+            >
                 {renderTabs().map(tab => (
-                    <button
-                        key={tab.key}
-                        className={activeTab === tab.key ? 'active' : ''}
-                        onClick={() => setActiveTab(tab.key as TabsProps['activeTab'])}
-                    >
-                        {tab.label}
-                    </button>
+                    <MuiTab key={tab.key} label={tab.label} value={tab.key} />
                 ))}
-            </div>
+            </MuiTabs>
             {activeTab === 'expertise' && (
                 <div className="expertise-content">
-                    {/* Checkbox to control the visibility of additional tabs */}
                     <div className="form-group">
                         <label>
                             <input
                                 type="checkbox"
                                 checked={showExpertiseTabs}
                                 onChange={handleExpertiseCheckboxChange}
-                                disabled={!!expertiseReportUrl}
                             />
-                            Dados Perícia
+                            Show additional expertise tabs
                         </label>
                     </div>
                 </div>
             )}
             <style>{`
                 .tabs-container {
+                    margin-bottom: 20px;
                     overflow-x: auto;
                 }
-                .tabs {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 20px;
-                    width: max-content;
-                }
-                .tabs button {
-                    flex: 1;
-                    padding: 10px;
-                    border: none;
-                    border-bottom: 2px solid transparent;
-                    background-color: #f4f4f4;
-                    cursor: pointer;
-                }
-                .tabs button.active {
-                    border-bottom: 2px solid #007bff;
-                }
-                .expertise-content {
-                    margin-top: 20px;
-                }
-                .form-group {
-                    margin-bottom: 15px;
-                }
-                .form-group label {
-                    display: block;
-                    margin-bottom: 5px;
-                }
-                .form-group input {
-                    width: 100%;
-                    padding: 8px;
-                    box-sizing: border-box;
-                }
-                .form-group input[type="checkbox"] {
-                    width: auto;
-                    padding: 0;
-                }
-                .form-group .error {
-                    color: red;
-                    font-size: 12px;
-                }
-                .form-actions {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-top: 20px;
-                }
-                .form-actions button {
-                    padding: 10px 20px;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                .form-actions button[type="button"] {
-                    background-color: #ccc;
-                }
-                .form-actions button[type="submit"], .form-actions button[type="button"]:not([type="button"]) {
-                    background-color: #007bff;
-                    color: white;
+                .MuiTab-root {
+                    text-transform: none;
                 }
             `}</style>
         </div>
