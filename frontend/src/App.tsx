@@ -1,21 +1,25 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
 import KanbanBoard from './pages/KanbanBoard';
 import MaterialTest from './pages/MaterialTest';
 import ExpertiseForm from './pages/ExpertiseForm';
 import Layout from './components/Layout';
+import theme from './theme';
 
 function App() {
   return (
-    <Router>
-      
-        <Routes>
-          <Route path="/" element={<KanbanBoard />} />
-          <Route path="/material-test" element={<MaterialTest />} />
-          <Route path="/expertise" element={<ExpertiseForm />} />
-        </Routes>
-      
-    </Router>
+     <ThemeProvider theme={theme}>
+      <Router>
+        <Layout>
+          <Routes>y
+            <Route path="/" element={<KanbanBoard />} />
+            <Route path="/material-test" element={<MaterialTest />} />
+            <Route path="/expertise" element={<ExpertiseForm />} />
+          </Routes>
+        </Layout>
+      </Router>
+     </ThemeProvider>
   );
 }
 

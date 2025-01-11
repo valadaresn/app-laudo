@@ -1,65 +1,95 @@
-import React, { forwardRef, ReactNode } from 'react';
-import { Box, Toolbar, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
-import { Home, Dashboard, Assignment } from '@mui/icons-material';
-
-const drawerWidth = 240;
-
-// Adaptador Link que o MUI vai entender como “component”
-const MUILink = forwardRef<HTMLAnchorElement, RouterLinkProps>(function MUILink(props, ref) {
-  return <RouterLink ref={ref} {...props} />;
-});
+import React, { useState } from 'react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Drawer,
+  Box,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  CssBaseline,
+} from '@mui/material';
 
 interface LayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 function Layout({ children }: LayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(true); // Estado para controlar o Drawer permanente
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleDrawerOpen = () => {
+    setOpen(!open);
+  };
+
+  const drawer = (
+    <Box sx={{ width: 240 }}>
+      <Toolbar />
+      <List>
+        <ListItemButton>
+          <ListItemIcon>
+            <span className="material-icons">home</span>
+          </ListItemIcon>
+          <ListItemText primary="Home" />
+        </ListItemButton>
+        <ListItemButton>
+          <ListItemIcon>
+            <span className="material-icons">dashboard</span>
+          </ListItemIcon>
+          <ListItemText primary="Dashboard" />
+        </ListItemButton>
+      </List>
+    </Box>
+  );
+
   return (
     <Box sx={{ display: 'flex' }}>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+      <CssBaseline />
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Toolbar>
+          <IconButton color="inherit" edge="start" onClick={handleDrawerToggle}>
+            <span className="material-icons">menu</span>
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            Meu Layout
+          </Typography>
+          <IconButton color="inherit" edge="end" onClick={handleDrawerOpen}>
+            <span className="material-icons">{open ? 'chevron_left' : 'chevron_right'}</span>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+        }}
       >
-        <Box
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              boxSizing: 'border-box',
-            },
-          }}
-        >
-          <Toolbar />
-          <Box sx={{ overflow: 'auto' }}>
-            <List>
-              <ListItemButton component={MUILink} to="/">
-                <ListItemIcon>
-                  <Home />
-                </ListItemIcon>
-                <ListItemText primary="Home" />
-              </ListItemButton>
+        {drawer}
+      </Drawer>
 
-              <ListItemButton component={MUILink} to="/kanban">
-                <ListItemIcon>
-                  <Dashboard />
-                </ListItemIcon>
-                <ListItemText primary="Kanban Board" />
-              </ListItemButton>
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          '& .MuiDrawer-paper': { width: open ? 240 : 0, boxSizing: 'border-box' },
+        }}
+        open={open}
+      >
+        {drawer}
+      </Drawer>
 
-              <ListItemButton component={MUILink} to="/cases">
-                <ListItemIcon>
-                  <Assignment />
-                </ListItemIcon>
-                <ListItemText primary="Cases" />
-              </ListItemButton>
-            </List>
-          </Box>
-        </Box>
-      </Box>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, ml: open ? 30 : 0 }}>
         {children}
       </Box>
     </Box>

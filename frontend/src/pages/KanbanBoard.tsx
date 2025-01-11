@@ -3,9 +3,12 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
-import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2'; 
+// import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box } from '@mui/material';
+//import Grid from '@mui/material/Unstable_Grid2'; 
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box, Grid } from '@mui/material';
+
+
 // ► Importações recomendadas pela doc oficial do Swiper v10+
 import 'swiper/css';              // CSS base
 import 'swiper/css/navigation';   // Se for usar controles de navegação
