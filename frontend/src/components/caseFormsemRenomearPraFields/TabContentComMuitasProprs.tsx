@@ -1,7 +1,7 @@
 import React from 'react';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { ICase } from '../../models/ICase';
-import RegisterForm from './RegisterFields';
+import RegisterForm from './RegisterForm';
 import SchedulingForm from './SchedulingForm';
 import ReportForm from './ReportForm';
 import PaymentForm from './PaymentForm';

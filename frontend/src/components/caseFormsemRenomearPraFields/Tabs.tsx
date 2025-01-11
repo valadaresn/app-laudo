@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Tabs as MuiTabs, Tab as MuiTab } from '@mui/material';
 
 interface TabsProps {
@@ -22,11 +22,11 @@ function Tabs({ cardStatus, finalExpertiseDate, briefConclusion, expertiseReport
                 scrollButtons="auto"
             >
                 <MuiTab key="register" label="Cadastro" value="register" />
-                {(cardStatus === 'AGENDAMENTO' || cardStatus === 'PERICIA') && (
+                {cardStatus === 'AGENDAMENTO' && (
                     <MuiTab key="scheduling" label="Agendamento" value="scheduling" />
                 )}
                 {cardStatus === 'PERICIA' && (
-                    <MuiTab key="expertise" label="Perícia" value="expertise" />
+                    <MuiTab key="scheduling" label="Agendamento" value="scheduling" />
                 )}
                 {cardStatus === 'LAUDO' && (
                     <MuiTab key="report" label="Laudo" value="report" />

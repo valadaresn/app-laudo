@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { ICase } from '../models/ICase';
 import { db } from '../firebaseConfig';
 import { doc, updateDoc, addDoc, collection } from 'firebase/firestore';
-import RegisterForm from '../components/caseForm/RegisterForm';
+import RegisterForm from '../components/caseForm/RegisterFields';
 import SchedulingForm from '../components/caseForm/SchedulingForm';
 import ReportForm from '../components/caseForm/ReportForm';
 import PaymentForm from '../components/caseForm/PaymentForm';

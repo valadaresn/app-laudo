@@ -1,21 +1,46 @@
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Container, Tabs as MuiTabs, Tab as MuiTab, Box, TextField } from '@mui/material';
+import { Container, Tabs as MuiTabs, Tab as MuiTab, Box, TextField, Button } from '@mui/material';
 import { ICase, CaseSchema } from '../models/ICase';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useParams } from 'react-router-dom';
+import { db } from '../firebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
 
 const defaultValues = CaseSchema.parse({
+    register: {},
+    scheduling: {},
+    expertiseReport: {},
+    payment: {},
     expertise: {}
 });
 
-const ExpertisePage: React.FC = () => {
+function ExpertiseForm() {
+    const { caseId } = useParams<{ caseId: string }>();
     const methods = useForm<ICase>({
         resolver: zodResolver(CaseSchema),
         defaultValues
     });
 
-    const { register, formState: { errors } } = methods;
+    const { register, handleSubmit, formState: { errors } } = methods;
     const [activeTab, setActiveTab] = React.useState('participants');
+
+    const onSubmit = async (data: ICase) => {
+        const expertiseData = {
+            ...data.expertise,
+            caseId,
+            plaintiff: data.register.plaintiff,
+            defendant: data.register.defendant,
+            finalExpertiseDate: data.scheduling.finalExpertiseDate
+        };
+
+        try {
+            await setDoc(doc(db, 'expertises', caseId), expertiseData);
+            console.log('Expertise saved successfully');
+        } catch (e) {
+            console.error('Error saving expertise: ', e);
+        }
+    };
 
     return (
         <FormProvider {...methods}>
@@ -81,9 +106,12 @@ const ExpertisePage: React.FC = () => {
                         />
                     )}
                 </Box>
+                <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)}>
+                    Salvar Perícia
+                </Button>
             </Container>
         </FormProvider>
     );
-};
+}
 
-export default ExpertisePage;
+export default ExpertiseForm;

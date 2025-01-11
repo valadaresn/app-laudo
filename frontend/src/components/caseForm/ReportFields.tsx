@@ -1,10 +1,11 @@
 import React from 'react';
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { ICase } from '../../models/ICase';
 import { TextField, Grid } from '@mui/material';
+import { useFormContext } from 'react-hook-form';
+import { ICase } from '../../models/ICase';
 
-function ReportForm({ register, errors }: 
-    { register: UseFormRegister<ICase>; errors: FieldErrors<ICase> }) {
+function ReportFields() {
+    const { register, formState: { errors } } = useFormContext<ICase>();
+
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -34,4 +35,4 @@ function ReportForm({ register, errors }:
     );
 }
 
-export default ReportForm;
+export default ReportFields;

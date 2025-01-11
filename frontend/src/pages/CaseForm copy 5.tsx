@@ -6,11 +6,7 @@ import { db } from '../firebaseConfig';
 import { doc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import Tabs from '../components/caseForm/Tabs';
 import FormHeader from '../components/caseForm/FormHeader';
-import RegisterFields from '../components/caseForm/RegisterFields';
-import SchedulingFields from '../components/caseForm/SchedulingFields';
-import ExpertiseFields from '../components/caseForm/ExpertiseFields';
-import PaymentFields from '../components/caseForm/PaymentFields';
-import ReportFields from '../components/caseForm/ReportFields';
+import TabContent from '../components/caseForm/TabContent';
 import { Container } from '@mui/material';
 
 const defaultValues = CaseSchema.parse({
@@ -27,9 +23,10 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
         defaultValues
     });
     
-    const { handleSubmit, reset, watch, formState: { isDirty }, getValues } = methods;
+    const { register, handleSubmit, reset, watch, formState: { errors, isDirty }, getValues } = methods;
     
-    const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'report' | 'payment' | 'expertise'>(initialTab);
+    const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'report' | 'payment' | 'expertise' | 'participants' | 'procedure' | 'parameters' | 'analysis' | 'briefConclusion'>(initialTab);
+    const [isEditing, setIsEditing] = useState(false);
     const initialValuesRef = useRef<ICase | null>(null);
 
     const finalExpertiseDate = watch('scheduling.finalExpertiseDate');
@@ -58,6 +55,14 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
         reset(currentValues);
     };
 
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+    };
+
     return (
         <FormProvider {...methods}>
             <Container style={{ height: '80vh' }}>
@@ -71,21 +76,14 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
                     setActiveTab={setActiveTab}
                 />
                 <form onSubmit={handleSubmit(handleSave)}>
-                    {activeTab === 'register' && (
-                        <RegisterFields />
-                    )}
-                    {activeTab === 'scheduling' && (
-                        <SchedulingFields />
-                    )}
-                    {activeTab === 'expertise' && (
-                        <ExpertiseFields />
-                    )}
-                    {activeTab === 'report' && (
-                        <ReportFields />
-                    )}
-                    {activeTab === 'payment' && (
-                        <PaymentFields />
-                    )}
+                    <TabContent
+                        activeTab={activeTab}
+                        register={register}
+                        errors={errors}
+                        isEditing={isEditing}
+                        handleEdit={handleEdit}
+                        handleCancel={handleCancel}
+                    />
                 </form>
                 <style>{`
                     .form-container {

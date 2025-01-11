@@ -6,8 +6,13 @@ import ExpertiseFields from './ExpertiseFields';
 import { ExpertiseParticipants, ExpertiseProcedure } from './ExpertiseForm';
 import { ICase } from '../../models/ICase';
 
-function TabContent({ activeTab, register, errors }: 
-    { activeTab: string; register: UseFormRegister<ICase>; errors: FieldErrors<ICase> }) {
+interface TabContentProps {
+    activeTab: string;
+    register: UseFormRegister<ICase>;
+    errors: FieldErrors<ICase>;
+}
+
+const TabContent: React.FC<TabContentProps> = ({ activeTab, register, errors }) => {
     return (
         <>
             {activeTab === 'register' && (
@@ -27,6 +32,6 @@ function TabContent({ activeTab, register, errors }:
             )}
         </>
     );
-}
+};
 
 export default TabContent;

@@ -1,62 +1,69 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, CssBaseline, Box } from '@mui/material';
+import React, { forwardRef, ReactNode } from 'react';
+import { Box, Toolbar, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 import { Home, Dashboard, Assignment } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
-const Layout: React.FC = ({ children }) => {
-    return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <Toolbar>
-                    <Typography variant="h6" noWrap component="div">
-                        Meu App
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-            <Drawer
-                variant="permanent"
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-                }}
-            >
-                <Toolbar />
-                <Box sx={{ overflow: 'auto' }}>
-                    <List>
-                        <ListItem button component={Link} to="/">
-                            <ListItemIcon>
-                                <Home />
-                            </ListItemIcon>
-                            <ListItemText primary="Home" />
-                        </ListItem>
-                        <ListItem button component={Link} to="/kanban">
-                            <ListItemIcon>
-                                <Dashboard />
-                            </ListItemIcon>
-                            <ListItemText primary="Kanban Board" />
-                        </ListItem>
-                        <ListItem button component={Link} to="/cases">
-                            <ListItemIcon>
-                                <Assignment />
-                            </ListItemIcon>
-                            <ListItemText primary="Cases" />
-                        </ListItem>
-                    </List>
-                </Box>
-            </Drawer>
-            <Box
-                component="main"
-                sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3, marginLeft: drawerWidth }}
-            >
-                <Toolbar />
-                {children}
-            </Box>
+// Adaptador Link que o MUI vai entender como “component”
+const MUILink = forwardRef<HTMLAnchorElement, RouterLinkProps>(function MUILink(props, ref) {
+  return <RouterLink ref={ref} {...props} />;
+});
+
+interface LayoutProps {
+  children: ReactNode;
+}
+
+function Layout({ children }: LayoutProps) {
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        aria-label="mailbox folders"
+      >
+        <Box
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+            },
+          }}
+        >
+          <Toolbar />
+          <Box sx={{ overflow: 'auto' }}>
+            <List>
+              <ListItemButton component={MUILink} to="/">
+                <ListItemIcon>
+                  <Home />
+                </ListItemIcon>
+                <ListItemText primary="Home" />
+              </ListItemButton>
+
+              <ListItemButton component={MUILink} to="/kanban">
+                <ListItemIcon>
+                  <Dashboard />
+                </ListItemIcon>
+                <ListItemText primary="Kanban Board" />
+              </ListItemButton>
+
+              <ListItemButton component={MUILink} to="/cases">
+                <ListItemIcon>
+                  <Assignment />
+                </ListItemIcon>
+                <ListItemText primary="Cases" />
+              </ListItemButton>
+            </List>
+          </Box>
         </Box>
-    );
-};
+      </Box>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        {children}
+      </Box>
+    </Box>
+  );
+}
 
 export default Layout;
