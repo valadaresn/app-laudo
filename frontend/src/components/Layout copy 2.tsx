@@ -140,7 +140,10 @@ function Layout({ children }: LayoutProps) {
           }),
           // Quando o Drawer estiver aberto, empurramos 240px.
           // Quando fechado, empurramos 60px.
-          marginLeft: open ? `${DRAWER_WIDTH_OPEN}px` : `${DRAWER_WIDTH_CLOSED}px`,
+          marginLeft: {
+            xs: 0, // em telas pequenas não empurramos nada, pois usamos o Drawer temporário
+            sm: open ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSED,
+          },
         }}
       >
         {children}

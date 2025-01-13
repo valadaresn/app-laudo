@@ -121,7 +121,7 @@ const KanbanBoard: React.FC = () => {
     return (
         <Container maxWidth={false} style={{ padding: 0, width: '100vw' }}>
             <Typography variant="h2" gutterBottom>
-                KANBAN
+                
             </Typography>
             <FormControlLabel
                 control={<Checkbox checked={isModal} onChange={(e) => setIsModal(e.target.checked)} />}
