@@ -18,6 +18,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { styled, useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,6 +38,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 function Layout({ children }: LayoutProps) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Adicionado para detectar se é mobile
   const [mobileOpen, setMobileOpen] = useState(false);
   const [open, setOpen] = useState(true); // controla o Drawer permanente em telas grandes
 
@@ -110,21 +112,23 @@ function Layout({ children }: LayoutProps) {
       </Drawer>
 
       {/* Drawer permanente (desktop) */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            // Largura dinâmica conforme estado "open"
-            width: open ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSED,
-            boxSizing: 'border-box',
-            bgcolor: open ? theme.palette.primary.main : '#fafafa',
-          },
-        }}
-        open={open}
-      >
-        {drawer}
-      </Drawer>
+      {!isMobile && ( // Adicionado para ocultar o Drawer em mobile
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': {
+              // Largura dinâmica conforme estado "open"
+              width: open ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSED,
+              boxSizing: 'border-box',
+              bgcolor: open ? theme.palette.primary.main : '#fafafa',
+            },
+          }}
+          open={open}
+        >
+          {drawer}
+        </Drawer>
+      )}
 
       {/* Conteúdo principal */}
       <Box

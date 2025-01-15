@@ -3,15 +3,26 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
-import { Container, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box, Grid } from '@mui/material';
+// import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box } from '@mui/material';
+//import Grid from '@mui/material/Unstable_Grid2'; 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Container, Paper, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box, Grid } from '@mui/material';
+
+
+// ► Importações recomendadas pela doc oficial do Swiper v10+
+import 'swiper/css';              // CSS base
+import 'swiper/css/navigation';   // Se for usar controles de navegação
+import 'swiper/css/pagination';   // Se for usar paginação
+// ► Para usar navegação/paginação, importe e registre os módulos
+import { Navigation, Pagination } from 'swiper/modules';
 
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<ICase | null>(null);
     const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
     const [cards, setCards] = useState<ICase[]>([]);
-    const [isModal, setIsModal] = useState(false);
-    const [activeColumn, setActiveColumn] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
+    const [activeStep, setActiveStep] = useState(0);
+    const [isModal, setIsModal] = useState(false); // Estado para controlar o checkbox
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -48,7 +59,7 @@ const KanbanBoard: React.FC = () => {
                     key={index}
                     className={`card ${selectedCard?.id === card.id ? 'active' : ''}`}
                     onClick={() => handleCardClick(card, tab)}
-                    style={{ marginBottom: '10px', width: '100%' }} // Ensure cards occupy 100% width
+                    style={{ marginBottom: '10px' }}
                 >
                     <CardContent>
                         <Typography variant="h6">
@@ -59,60 +70,10 @@ const KanbanBoard: React.FC = () => {
             ));
     };
 
-    const renderMobileColumn = () => {
-        switch (activeColumn) {
-            case 'register':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('CADASTRO', 'register')}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => {
-                                    setSelectedCard(null);
-                                    setFormOpen(true);
-                                    setActiveTab('register');
-                                }}
-                            >
-                                Novo
-                            </Button>
-                        </Box>
-                    </Grid>
-                );
-            case 'scheduling':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('AGENDAMENTO', 'scheduling')}
-                        </Box>
-                    </Grid>
-                );
-            case 'expertise':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('PERICIA', 'expertise')}
-                        </Box>
-                    </Grid>
-                );
-            case 'payment':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('LAUDO', 'expertise')}
-                        </Box>
-                    </Grid>
-                );
-            default:
-                return null;
-        }
-    };
-
     const columns = (
         <>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
+            <Grid xs={12} md={3}>
+                <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
                     <Typography variant="h6" gutterBottom>
                         Cadastro
                     </Typography>
@@ -128,31 +89,31 @@ const KanbanBoard: React.FC = () => {
                     >
                         Novo
                     </Button>
-                </Box>
+                </Paper>
             </Grid>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
+            <Grid xs={12} md={3}>
+                <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
                     <Typography variant="h6" gutterBottom>
                         Agendamento
                     </Typography>
                     {renderCards('AGENDAMENTO', 'scheduling')}
-                </Box>
+                </Paper>
             </Grid>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
+            <Grid xs={12} md={3}>
+                <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
                     <Typography variant="h6" gutterBottom>
                         Perícia
                     </Typography>
                     {renderCards('PERICIA', 'expertise')}
-                </Box>
+                </Paper>
             </Grid>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
+            <Grid xs={12} md={3}>
+                <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
                     <Typography variant="h6" gutterBottom>
                         Laudo
                     </Typography>
                     {renderCards('LAUDO', 'expertise')}
-                </Box>
+                </Paper>
             </Grid>
         </>
     );
@@ -162,46 +123,89 @@ const KanbanBoard: React.FC = () => {
             <Typography variant="h2" gutterBottom>
                 
             </Typography>
-            {!isMobile && (
-                <FormControlLabel
-                    control={<Checkbox checked={isModal} onChange={(e) => setIsModal(e.target.checked)} />}
-                    label="Exibir CaseForm em Modal"
-                />
-            )}
+            <FormControlLabel
+                control={<Checkbox checked={isModal} onChange={(e) => setIsModal(e.target.checked)} />}
+                label="Exibir CaseForm em Modal"
+            />
             {isMobile ? (
-                <Grid container spacing={0} style={{ width: '100%', margin: 0 }}>
-                    <Grid item xs={12}>
-                        {renderMobileColumn()}
-                    </Grid>
-                    {isFormOpen && (
-                        <Grid item xs={12} style={{ padding: 0 }}>
-                            <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                                <CaseForm
-                                    card={selectedCard}
-                                    onClose={handleCloseForm}
-                                    initialTab={activeTab}
-                                />
-                            </Box>
+                <Swiper
+                    modules={[Navigation, Pagination]}
+                    navigation
+                    pagination
+                    spaceBetween={50}
+                    slidesPerView={1}
+                    onSlideChange={(swiper) => setActiveStep(swiper.activeIndex)}
+                    onSwiper={(swiper) => setActiveStep(swiper.activeIndex)}
+                >
+                    <SwiperSlide>
+                        <Grid xs={12} md={3}>
+                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
+                                <Typography variant="h6" gutterBottom>
+                                    Cadastro
+                                </Typography>
+                                {renderCards('CADASTRO', 'register')}
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                        setSelectedCard(null);
+                                        setFormOpen(true);
+                                        setActiveTab('register');
+                                    }}
+                                >
+                                    Novo
+                                </Button>
+                            </Paper>
                         </Grid>
-                    )}
-                </Grid>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Grid xs={12} md={3}>
+                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
+                                <Typography variant="h6" gutterBottom>
+                                    Agendamento
+                                </Typography>
+                                {renderCards('AGENDAMENTO', 'scheduling')}
+                            </Paper>
+                        </Grid>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Grid xs={12} md={3}>
+                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
+                                <Typography variant="h6" gutterBottom>
+                                    Perícia
+                                </Typography>
+                                {renderCards('PERICIA', 'expertise')}
+                            </Paper>
+                        </Grid>
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <Grid xs={12} md={3}>
+                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
+                                <Typography variant="h6" gutterBottom>
+                                    Laudo
+                                </Typography>
+                                {renderCards('LAUDO', 'expertise')}
+                            </Paper>
+                        </Grid>
+                    </SwiperSlide>
+                </Swiper>
             ) : (
                 <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
                     {columns}
-                    <Grid item xs={12} md={3}>
+                    <Grid xs={12} md={3}>
                         {isFormOpen && !isModal && (
-                            <Box style={{ padding: '16px', height: '100%' }}>
+                            <Paper elevation={3} style={{ padding: '16px', height: '100%' }}>
                                 <CaseForm
                                     card={selectedCard}
                                     onClose={handleCloseForm}
                                     initialTab={activeTab}
                                 />
-                            </Box>
+                            </Paper>
                         )}
                     </Grid>
                 </Grid>
             )}
-            {isFormOpen && isModal && !isMobile && (
+            {isFormOpen && isModal && (
                 <Modal open={isFormOpen} onClose={handleCloseForm}>
                     <Box
                         sx={{
@@ -215,7 +219,7 @@ const KanbanBoard: React.FC = () => {
                             boxShadow: 24,
                             p: 0,
                             overflow: 'auto',
-                            maxWidth: 700
+                            maxWidth: 700 // Adicionando largura máxima
                         }}
                     >
                         <CaseForm

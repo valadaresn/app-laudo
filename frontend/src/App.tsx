@@ -12,14 +12,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <Layout>
+        {/* <Layout> */}
           <Routes>
             <Route path="/" element={<KanbanBoard />} />
             <Route path="/material-test" element={<MaterialTest />} />
             <Route path="/expertise" element={<ExpertiseForm />} />
             <Route path="/simple" element={<SimplePage />} />
           </Routes>
-        </Layout>
+        {/* </Layout> */}
       </Router>
     </ThemeProvider>
   );

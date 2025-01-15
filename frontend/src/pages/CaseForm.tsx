@@ -55,7 +55,7 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
         } else {
             await addDoc(collection(db, 'cases'), currentValues);
         }
-        reset(currentValues);
+        reset(currentValues); 
     };
 
     return (
