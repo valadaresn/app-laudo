@@ -3,14 +3,15 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
-import { Container, Typography, Button, Card, CardContent, useMediaQuery, useTheme, Checkbox, FormControlLabel, Modal, Box, Grid } from '@mui/material';
+import { Container, Typography, useMediaQuery, useTheme, Modal, Box, Grid } from '@mui/material';
+import MobileKanbanColumn from '../components/kanbam/MobileKanbanColumn';
+import KanbanColumn from '../components/kanbam/KanbanColumn';
 
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState<ICase | null>(null);
     const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
     const [cards, setCards] = useState<ICase[]>([]);
-    const [isModal, setIsModal] = useState(false);
     const [activeColumn, setActiveColumn] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
 
     const theme = useTheme();
@@ -19,6 +20,7 @@ const KanbanBoard: React.FC = () => {
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'cases'), (snapshot) => {
             const cases = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as ICase));
+            console.log('Fetched cases:', cases); // Log dos dados puxados
             setCards(cases);
         });
         return () => unsubscribe();
@@ -40,138 +42,24 @@ const KanbanBoard: React.FC = () => {
         setSelectedCard(null);
     };
 
-    const renderCards = (status: ICase['status'], tab: 'register' | 'scheduling' | 'expertise' | 'payment') => {
-        return cards
-            .filter((card) => card.status === status)
-            .map((card, index) => (
-                <Card
-                    key={index}
-                    className={`card ${selectedCard?.id === card.id ? 'active' : ''}`}
-                    onClick={() => handleCardClick(card, tab)}
-                    style={{ marginBottom: '10px', width: '100%' }} // Ensure cards occupy 100% width
-                >
-                    <CardContent>
-                        <Typography variant="h6">
-                            {`${card.register.plaintiff} vs ${card.register.defendant}`}
-                        </Typography>
-                    </CardContent>
-                </Card>
-            ));
-    };
-
-    const renderMobileColumn = () => {
-        switch (activeColumn) {
-            case 'register':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('CADASTRO', 'register')}
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => {
-                                    setSelectedCard(null);
-                                    setFormOpen(true);
-                                    setActiveTab('register');
-                                }}
-                            >
-                                Novo
-                            </Button>
-                        </Box>
-                    </Grid>
-                );
-            case 'scheduling':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('AGENDAMENTO', 'scheduling')}
-                        </Box>
-                    </Grid>
-                );
-            case 'expertise':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('PERICIA', 'expertise')}
-                        </Box>
-                    </Grid>
-                );
-            case 'payment':
-                return (
-                    <Grid item xs={12} style={{ padding: 0 }}>
-                        <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                            {renderCards('LAUDO', 'expertise')}
-                        </Box>
-                    </Grid>
-                );
-            default:
-                return null;
-        }
-    };
-
-    const columns = (
-        <>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Cadastro
-                    </Typography>
-                    {renderCards('CADASTRO', 'register')}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => {
-                            setSelectedCard(null);
-                            setFormOpen(true);
-                            setActiveTab('register');
-                        }}
-                    >
-                        Novo
-                    </Button>
-                </Box>
-            </Grid>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Agendamento
-                    </Typography>
-                    {renderCards('AGENDAMENTO', 'scheduling')}
-                </Box>
-            </Grid>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Perícia
-                    </Typography>
-                    {renderCards('PERICIA', 'expertise')}
-                </Box>
-            </Grid>
-            <Grid item xs={12} md={3}>
-                <Box style={{ padding: '16px', height: '100%' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Laudo
-                    </Typography>
-                    {renderCards('LAUDO', 'expertise')}
-                </Box>
-            </Grid>
-        </>
-    );
+    const columns = ['Cadastro', 'Agendamento', 'Perícia', 'Laudo'];
 
     return (
         <Container maxWidth={false} style={{ padding: 0, width: '100vw' }}>
             <Typography variant="h2" gutterBottom>
-                
+                Kanban Board
             </Typography>
-            {!isMobile && (
-                <FormControlLabel
-                    control={<Checkbox checked={isModal} onChange={(e) => setIsModal(e.target.checked)} />}
-                    label="Exibir CaseForm em Modal"
-                />
-            )}
             {isMobile ? (
                 <Grid container spacing={0} style={{ width: '100%', margin: 0 }}>
                     <Grid item xs={12}>
-                        {renderMobileColumn()}
+                        <MobileKanbanColumn
+                            activeColumn={activeColumn}
+                            cards={cards}
+                            handleCardClick={handleCardClick}
+                            setActiveColumn={setActiveColumn}
+                            setFormOpen={setFormOpen}
+                            setActiveTab={setActiveTab}
+                        />
                     </Grid>
                     {isFormOpen && (
                         <Grid item xs={12} style={{ padding: 0 }}>
@@ -187,21 +75,20 @@ const KanbanBoard: React.FC = () => {
                 </Grid>
             ) : (
                 <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
-                    {columns}
-                    <Grid item xs={12} md={3}>
-                        {isFormOpen && !isModal && (
-                            <Box style={{ padding: '16px', height: '100%' }}>
-                                <CaseForm
-                                    card={selectedCard}
-                                    onClose={handleCloseForm}
-                                    initialTab={activeTab}
-                                />
-                            </Box>
-                        )}
-                    </Grid>
+                    {columns.map((column) => (
+                        <KanbanColumn
+                            key={column}
+                            title={column}
+                            cards={cards}
+                            handleCardClick={handleCardClick}
+                            setFormOpen={setFormOpen}
+                            setActiveTab={setActiveTab}
+                            selectedCard={selectedCard} // Passe o selectedCard para KanbanColumn
+                        />
+                    ))}
                 </Grid>
             )}
-            {isFormOpen && isModal && !isMobile && (
+            {isFormOpen && !isMobile && (
                 <Modal open={isFormOpen} onClose={handleCloseForm}>
                     <Box
                         sx={{
