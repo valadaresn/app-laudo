@@ -1,25 +1,28 @@
-import React from 'react';
 import { Grid, Box, Typography, Button } from '@mui/material';
-import KanbanCard from './KambamCard';
 import { ICase } from '../../models/ICase';
+import { Status } from '../../models/Status'; // Importar de Status.ts
+import KanbanCard from './KanbanCard';
 
 interface KanbanColumnProps {
-    title: string;
+    title: Status;
+    label: string; // Nova propriedade para o rótulo em português
     cards: ICase[];
-    handleCardClick: (card: ICase, tab: 'register' | 'scheduling' | 'expertise' | 'payment') => void;
+    handleCardClick: (card: ICase) => void;
     setFormOpen: (open: boolean) => void;
-    setActiveTab: (tab: 'register' | 'scheduling' | 'expertise' | 'payment') => void;
-    selectedCard: ICase | null;
+    selectedCardId: string | null;
 }
 
-const normalizeString = (str: string) => {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-};
-
-const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, cards, handleCardClick, setFormOpen, setActiveTab, selectedCard }) => {
-    const normalizedTitle = normalizeString(title);
-    const filteredCards = cards.filter(card => normalizeString(card.status) === normalizedTitle);
-    console.log(`Rendering column: ${title}, Cards:`, filteredCards); // Log dos cards filtrados
+function KanbanColumn({ title, label, cards, handleCardClick, setFormOpen, selectedCardId }: KanbanColumnProps) {
+    const renderCards = () => {
+        return cards.filter(card => card.status === title).map((card, index) => (
+            <KanbanCard
+                key={index}
+                card={card}
+                handleCardClick={handleCardClick}
+                isSelected={card.id === selectedCardId}
+            />
+        ));
+    };
 
     return (
         <Grid item xs={12} md={3}>
@@ -33,22 +36,14 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, cards, handleCardCli
                 }}
             >
                 <Typography variant="h6" gutterBottom>
-                    {title}
+                    {label} {/* Usar a nova propriedade label */}
                 </Typography>
-                {filteredCards.map((card, index) => (
-                    <KanbanCard
-                        key={index}
-                        card={card}
-                        handleCardClick={handleCardClick}
-                        isSelected={card.id === selectedCard?.id}
-                    />
-                ))}
+                {renderCards()}
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={() => {
                         setFormOpen(true);
-                        setActiveTab('register');
                     }}
                 >
                     Novo
@@ -56,6 +51,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ title, cards, handleCardCli
             </Box>
         </Grid>
     );
-};
+}
 
 export default KanbanColumn;

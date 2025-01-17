@@ -1,44 +1,42 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Tabs as MuiTabs, Tab as MuiTab } from '@mui/material';
 
 interface TabsProps {
-    cardStatus: string | undefined;
+    cardStatus: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment' | undefined;
     finalExpertiseDate: string;
     briefConclusion: string;
     expertiseReportUrl: string;
-    activeTab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise';
-    setActiveTab: (tab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise') => void;
+    activeTab: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment';
+    setActiveTab: (tab: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment') => void;
 }
 
-function Tabs({ cardStatus, finalExpertiseDate, briefConclusion, expertiseReportUrl, activeTab, setActiveTab }: TabsProps) {
+function Tabs({ cardStatus, activeTab, setActiveTab }: TabsProps) {
     const tabsContainerRef = useRef<HTMLDivElement>(null);
 
     return (
         <div className="tabs-container" ref={tabsContainerRef}>
             <MuiTabs
                 value={activeTab}
-                onChange={(event, newValue) => setActiveTab(newValue)}
+                onChange={(_, newValue) => setActiveTab(newValue)}
                 variant="scrollable"
                 scrollButtons="auto"
             >
                 <MuiTab key="register" label="Cadastro" value="register" />
-                {(cardStatus === 'AGENDAMENTO' || cardStatus === 'PERICIA') && (
+
+                {cardStatus === 'scheduling' && (
                     <MuiTab key="scheduling" label="Agendamento" value="scheduling" />
                 )}
-                {cardStatus === 'PERICIA' && (
+
+                {cardStatus === 'expertise' && (
                     <MuiTab key="expertise" label="Perícia" value="expertise" />
                 )}
-                {cardStatus === 'LAUDO' && (
+
+                {cardStatus === 'report' && (
                     <MuiTab key="report" label="Laudo" value="report" />
                 )}
-                {cardStatus === 'RECEBIMENTO' && (
-                    <>
-                        <MuiTab key="report" label="Laudo" value="report" />
-                        <MuiTab key="payment" label="Recebimento" value="payment" />
-                    </>
-                )}
-                {briefConclusion && (
-                    <MuiTab key="report" label="Laudo" value="report" />
+
+                {cardStatus === 'payment' && (
+                    <MuiTab key="payment" label="Recebimento" value="payment" />
                 )}
             </MuiTabs>
             <style>{`

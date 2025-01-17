@@ -1,10 +1,12 @@
 import React from 'react';
+import { Box, TextField, MenuItem } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import { ICase } from '../../models/ICase';
-import { TextField, Box } from '@mui/material';
+import { StatusEnum, statusLabels } from '../../models/Status';
 
-function RegisterFields() {
-    const { register, formState: { errors } } = useFormContext<ICase>();
+const RegisterFields: React.FC = () => {
+    const { register, formState: { errors }, getValues } = useFormContext<ICase>();
+    const status = getValues('status'); // Obter o valor inicial do campo 'status'
 
     return (
         <>
@@ -44,10 +46,8 @@ function RegisterFields() {
             </Box>
             <Box mb={2}>
                 <TextField
-                    label="Processo"
-                    {...register('register.caseNumber', { required: 'Processo é obrigatório' })}
-                    error={!!errors.register?.caseNumber}
-                    helperText={errors.register?.caseNumber?.message}
+                    label="Número do Caso"
+                    {...register('register.caseNumber')}
                     fullWidth
                     InputLabelProps={{
                         shrink: true,
@@ -56,12 +56,15 @@ function RegisterFields() {
             </Box>
             <Box mb={2}>
                 <TextField
-                    label="Data Audiência"
+                    label="Data da Audiência"
                     type="date"
                     {...register('register.hearingDate')}
                     fullWidth
                     InputLabelProps={{
                         shrink: true,
+                    }}
+                    InputProps={{
+                        inputProps: { max: new Date().toISOString().split('T')[0] }
                     }}
                 />
             </Box>
@@ -109,7 +112,6 @@ function RegisterFields() {
             <Box mb={2}>
                 <TextField
                     label="URL do Processo PDF"
-                    type="url"
                     {...register('register.casePdfUrl')}
                     fullWidth
                     InputLabelProps={{
@@ -117,8 +119,26 @@ function RegisterFields() {
                     }}
                 />
             </Box>
+            <Box mb={2}>
+                <TextField
+                    select
+                    label="Status"
+                    {...register('status')}
+                    defaultValue={status} // Definir o valor inicial do campo 'status'
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                >
+                    {StatusEnum.map((status) => (
+                        <MenuItem key={status} value={status}>
+                            {statusLabels[status]}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            </Box>
         </>
     );
-}
+};
 
 export default RegisterFields;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { StatusEnum } from './Status';
 
 export const RegisterSchema = z.object({
     plaintiff: z.string().default(''),
@@ -44,7 +45,7 @@ export const ExpertiseSchema = z.object({
 
 export const CaseSchema = z.object({
     id: z.string().optional(),
-    status: z.enum(['CADASTRO', 'AGENDAMENTO', 'PERICIA', 'LAUDO', 'RECEBIMENTO']).default('CADASTRO'),
+    status: z.enum(StatusEnum).default('register'),
     register: RegisterSchema,
     scheduling: SchedulingSchema,
     expertiseReport: ExpertiseReportSchema,

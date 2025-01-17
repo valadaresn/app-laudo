@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Box, Typography, Button } from '@mui/material';
 import { ICase } from '../../models/ICase';
-import KanbanCard from './KambamCard';
+import KanbanCard from './KanbanCard';
 
 
 interface KanbanColumnProps {

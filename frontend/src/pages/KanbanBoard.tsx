@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
+import { Status, statusLabels } from '../models/Status';
 import { Container, Grid, Box, Typography, Modal, useTheme, useMediaQuery } from '@mui/material';
 import KanbanColumn from '../components/kanbam/KanbanColumn';
 import MobileKanbanColumn from '../components/kanbam/MobileKanbanColumn';
@@ -10,12 +12,12 @@ import MobileKanbanColumn from '../components/kanbam/MobileKanbanColumn';
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
     const [cards, setCards] = useState<ICase[]>([]);
-    const [activeColumn, setActiveColumn] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
+    const [activeColumn, setActiveColumn] = useState<Status>('register');
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const navigate = useNavigate(); // Usar useNavigate para navegação
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'cases'), (snapshot) => {
@@ -26,15 +28,18 @@ const KanbanBoard: React.FC = () => {
         return () => unsubscribe();
     }, []);
 
-    const handleCardClick = (cardId: string, tab: 'register' | 'scheduling' | 'expertise' | 'payment') => {
-        if (selectedCardId === cardId) {
+    const handleCardClick = (card: ICase) => {
+        if (selectedCardId === card.id) {
             setFormOpen(false);
             setSelectedCardId(null);
         } else {
-            setSelectedCardId(cardId);
-            setActiveTab(tab);
+            setSelectedCardId(card.id ?? null); // Garantir que o valor seja string ou null
             setFormOpen(true);
         }
+    };
+
+    const handleMobileCardClick = (card: ICase) => {
+        navigate(`/case-form/${card.id}`); // Navegar para a nova rota no modo mobile
     };
 
     const handleCloseForm = () => {
@@ -42,7 +47,7 @@ const KanbanBoard: React.FC = () => {
         setSelectedCardId(null);
     };
 
-    const columns = ['Cadastro', 'Agendamento', 'Perícia', 'Laudo'];
+    const columns: Status[] = ['register', 'scheduling', 'expertise', 'report', 'payment'];
 
     return (
         <Container maxWidth={false} style={{ padding: 0, width: '100vw' }}>
@@ -55,23 +60,12 @@ const KanbanBoard: React.FC = () => {
                         <MobileKanbanColumn
                             activeColumn={activeColumn}
                             cards={cards}
-                            handleCardClick={handleCardClick}
+                            handleCardClick={handleMobileCardClick} // Usar handleMobileCardClick no modo mobile
                             setActiveColumn={setActiveColumn}
                             setFormOpen={setFormOpen}
-                            setActiveTab={setActiveTab}
+                            selectedCardId={selectedCardId}
                         />
                     </Grid>
-                    {isFormOpen && (
-                        <Grid item xs={12} style={{ padding: 0 }}>
-                            <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
-                                <CaseForm
-                                    cardId={selectedCardId}
-                                    onClose={handleCloseForm}
-                                    initialTab={activeTab}
-                                />
-                            </Box>
-                        </Grid>
-                    )}
                 </Grid>
             ) : (
                 <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
@@ -79,11 +73,11 @@ const KanbanBoard: React.FC = () => {
                         <KanbanColumn
                             key={column}
                             title={column}
+                            label={statusLabels[column]}
                             cards={cards}
                             handleCardClick={handleCardClick}
                             setFormOpen={setFormOpen}
-                            setActiveTab={setActiveTab}
-                            selectedCardId={selectedCardId} // Passe o selectedCardId para KanbanColumn
+                            selectedCardId={selectedCardId}
                         />
                     ))}
                 </Grid>
@@ -108,7 +102,6 @@ const KanbanBoard: React.FC = () => {
                         <CaseForm
                             cardId={selectedCardId}
                             onClose={handleCloseForm}
-                            initialTab={activeTab}
                         />
                     </Box>
                 </Modal>

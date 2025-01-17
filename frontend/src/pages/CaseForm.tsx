@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ICase, CaseSchema } from '../models/ICase';
+import { Status } from '../models/Status';
 import { db } from '../firebaseConfig';
 import { doc, updateDoc, addDoc, collection, onSnapshot } from 'firebase/firestore';
 import Tabs from '../components/caseForm/Tabs';
@@ -21,7 +22,7 @@ const defaultValues = CaseSchema.parse({
     expertise: {}
 });
 
-function CaseForm({ cardId, onClose, initialTab }: { cardId: string | null; onClose: () => void; initialTab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise' }) {
+function CaseForm({ cardId }: { cardId: string | null; onClose: () => void }) {
     const methods = useForm<ICase>({
         resolver: zodResolver(CaseSchema),
         defaultValues
@@ -29,7 +30,7 @@ function CaseForm({ cardId, onClose, initialTab }: { cardId: string | null; onCl
     
     const { handleSubmit, reset, watch, formState: { isDirty }, getValues } = methods;
     
-    const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'report' | 'payment' | 'expertise'>(initialTab);
+    const [activeTab, setActiveTab] = useState<Status>('register');
     const initialValuesRef = useRef<ICase | null>(null);
 
     const finalExpertiseDate = watch('scheduling.finalExpertiseDate');
@@ -45,10 +46,12 @@ function CaseForm({ cardId, onClose, initialTab }: { cardId: string | null; onCl
                     console.log('Fetched card data:', cardData); // Log dos dados puxados
                     reset(cardData);
                     initialValuesRef.current = cardData;
+                    setActiveTab(cardData.status); // Definir a aba ativa com base no status
                 } else {
                     console.log('No such document!');
                     reset(defaultValues);
                     initialValuesRef.current = defaultValues;
+                    setActiveTab('register'); // Definir a aba ativa como 'register' por padrão
                 }
             });
             return () => unsubscribe();
@@ -56,9 +59,9 @@ function CaseForm({ cardId, onClose, initialTab }: { cardId: string | null; onCl
             console.log('Invalid cardId or no cardId provided');
             reset(defaultValues);
             initialValuesRef.current = defaultValues;
+            setActiveTab('register'); // Definir a aba ativa como 'register' por padrão
         }
-        setActiveTab(initialTab);
-    }, [cardId, initialTab, reset]);
+    }, [cardId, reset]);
 
     const handleSave = async () => {
         const currentValues = getValues();

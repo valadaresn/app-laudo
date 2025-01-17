@@ -1,4 +1,3 @@
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ICase } from '../../models/ICase';
 import { TextField, FormControlLabel, Switch, Box } from '@mui/material';
