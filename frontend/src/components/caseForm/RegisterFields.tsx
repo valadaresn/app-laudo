@@ -15,6 +15,9 @@ function RegisterFields() {
                     error={!!errors.register?.plaintiff}
                     helperText={errors.register?.plaintiff?.message}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
             <Box mb={2}>
@@ -24,6 +27,9 @@ function RegisterFields() {
                     error={!!errors.register?.defendant}
                     helperText={errors.register?.defendant?.message}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
             <Box mb={2}>
@@ -31,6 +37,9 @@ function RegisterFields() {
                     label="Identificador Perícia"
                     {...register('register.expertiseIdentifier')}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
             <Box mb={2}>
@@ -40,6 +49,9 @@ function RegisterFields() {
                     error={!!errors.register?.caseNumber}
                     helperText={errors.register?.caseNumber?.message}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
             <Box mb={2}>
@@ -59,6 +71,9 @@ function RegisterFields() {
                     type="email"
                     {...register('register.defendantLawyerEmail')}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
             <Box mb={2}>
@@ -67,6 +82,9 @@ function RegisterFields() {
                     type="email"
                     {...register('register.plaintiffLawyerEmail')}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
             <Box mb={2}>
@@ -83,6 +101,9 @@ function RegisterFields() {
                     label="Objeto"
                     {...register('register.expertiseSubject')}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
             <Box mb={2}>
@@ -91,6 +112,9 @@ function RegisterFields() {
                     type="url"
                     {...register('register.casePdfUrl')}
                     fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
             </Box>
         </>

@@ -1,31 +1,18 @@
 import React from 'react';
-import { Button } from '@mui/material';
 
 interface FormHeaderProps {
     isDirty: boolean;
-    handleSave: () => void;
-    card: any;
+    handleSave: () => Promise<void>;
+    cardId: string | null;
 }
 
-const FormHeader: React.FC<FormHeaderProps> = ({ isDirty, handleSave, card }) => {
+const FormHeader: React.FC<FormHeaderProps> = ({ isDirty, handleSave, cardId }) => {
     return (
         <div className="form-header">
-            <h2>{card ? 'Editar Caso' : 'Novo Caso'}</h2>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSave}
-                disabled={!isDirty}
-            >
-                Salvar
-            </Button>
-            <style>{`
-                .form-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-            `}</style>
+            <h2>{cardId ? 'Edit Case' : 'New Case'}</h2>
+            <button onClick={handleSave} disabled={!isDirty}>
+                Save
+            </button>
         </div>
     );
 };

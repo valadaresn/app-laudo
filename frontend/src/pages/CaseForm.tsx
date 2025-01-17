@@ -3,7 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ICase, CaseSchema } from '../models/ICase';
 import { db } from '../firebaseConfig';
-import { doc, updateDoc, addDoc, collection } from 'firebase/firestore';
+import { doc, updateDoc, addDoc, collection, onSnapshot } from 'firebase/firestore';
 import Tabs from '../components/caseForm/Tabs';
 import FormHeader from '../components/caseForm/FormHeader';
 import RegisterFields from '../components/caseForm/RegisterFields';
@@ -21,7 +21,7 @@ const defaultValues = CaseSchema.parse({
     expertise: {}
 });
 
-const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise' }> = ({ card, onClose, initialTab }) => {
+function CaseForm({ cardId, onClose, initialTab }: { cardId: string | null; onClose: () => void; initialTab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise' }) {
     const methods = useForm<ICase>({
         resolver: zodResolver(CaseSchema),
         defaultValues
@@ -37,20 +37,34 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
     const expertiseReportUrl = watch('expertiseReport.expertiseReportUrl');
 
     useEffect(() => {
-        if (card) {
-            reset(card);
-            initialValuesRef.current = card;
+        if (cardId && typeof cardId === 'string') {
+            const docRef = doc(db, 'cases', cardId);
+            const unsubscribe = onSnapshot(docRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const cardData = snapshot.data() as ICase;
+                    console.log('Fetched card data:', cardData); // Log dos dados puxados
+                    reset(cardData);
+                    initialValuesRef.current = cardData;
+                } else {
+                    console.log('No such document!');
+                    reset(defaultValues);
+                    initialValuesRef.current = defaultValues;
+                }
+            });
+            return () => unsubscribe();
         } else {
+            console.log('Invalid cardId or no cardId provided');
             reset(defaultValues);
             initialValuesRef.current = defaultValues;
         }
         setActiveTab(initialTab);
-    }, [card, initialTab, reset]);
+    }, [cardId, initialTab, reset]);
 
     const handleSave = async () => {
         const currentValues = getValues();
-        if (card?.id) {
-            const docRef = doc(db, 'cases', card.id);
+        console.log('Saving current values:', currentValues); // Log dos valores atuais
+        if (cardId && typeof cardId === 'string') {
+            const docRef = doc(db, 'cases', cardId);
             await updateDoc(docRef, currentValues);
         } else {
             await addDoc(collection(db, 'cases'), currentValues);
@@ -61,9 +75,9 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
     return (
         <FormProvider {...methods}>
             <Container style={{ height: '80vh' }}>
-                <FormHeader isDirty={isDirty} handleSave={handleSave} card={card} />
+                <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId} />
                 <Tabs
-                    cardStatus={card?.status}                    
+                    cardStatus={initialValuesRef.current?.status}                    
                     finalExpertiseDate={finalExpertiseDate}
                     briefConclusion={briefConclusion}
                     expertiseReportUrl={expertiseReportUrl}
@@ -100,6 +114,6 @@ const CaseForm: React.FC<{ card: ICase | null; onClose: () => void; initialTab: 
             </Container>
         </FormProvider>
     );
-};
+}
 
 export default CaseForm;

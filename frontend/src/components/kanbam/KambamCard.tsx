@@ -5,7 +5,7 @@ import { CardContainer } from './KanbanStyles';
 
 interface KanbanCardProps {
     card: ICase;
-    handleCardClick: (card: ICase, tab: 'register' | 'scheduling' | 'expertise' | 'payment') => void;
+    handleCardClick: (cardId: string, tab: 'register' | 'scheduling' | 'expertise' | 'payment') => void;
     isSelected: boolean;
 }
 
@@ -14,7 +14,7 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ card, handleCardClick, isSelect
     return (
         <CardContainer
             className={`card ${isSelected ? 'active' : ''}`}
-            onClick={() => handleCardClick(card, 'register')}
+            onClick={() => handleCardClick(card.id, 'register')}
         >
             <Card style={{ marginBottom: '10px', width: '100%', borderRadius: '8px' }}>
                 <CardContent>

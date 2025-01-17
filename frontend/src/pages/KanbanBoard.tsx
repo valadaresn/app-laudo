@@ -3,13 +3,13 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
-import { Container, Typography, useMediaQuery, useTheme, Modal, Box, Grid } from '@mui/material';
-import MobileKanbanColumn from '../components/kanbam/MobileKanbanColumn';
+import { Container, Grid, Box, Typography, Modal, useTheme, useMediaQuery } from '@mui/material';
 import KanbanColumn from '../components/kanbam/KanbanColumn';
+import MobileKanbanColumn from '../components/kanbam/MobileKanbanColumn';
 
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
-    const [selectedCard, setSelectedCard] = useState<ICase | null>(null);
+    const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
     const [cards, setCards] = useState<ICase[]>([]);
     const [activeColumn, setActiveColumn] = useState<'register' | 'scheduling' | 'expertise' | 'payment'>('register');
@@ -26,12 +26,12 @@ const KanbanBoard: React.FC = () => {
         return () => unsubscribe();
     }, []);
 
-    const handleCardClick = (card: ICase, tab: 'register' | 'scheduling' | 'expertise' | 'payment') => {
-        if (selectedCard?.id === card.id) {
+    const handleCardClick = (cardId: string, tab: 'register' | 'scheduling' | 'expertise' | 'payment') => {
+        if (selectedCardId === cardId) {
             setFormOpen(false);
-            setSelectedCard(null);
+            setSelectedCardId(null);
         } else {
-            setSelectedCard(card);
+            setSelectedCardId(cardId);
             setActiveTab(tab);
             setFormOpen(true);
         }
@@ -39,7 +39,7 @@ const KanbanBoard: React.FC = () => {
 
     const handleCloseForm = () => {
         setFormOpen(false);
-        setSelectedCard(null);
+        setSelectedCardId(null);
     };
 
     const columns = ['Cadastro', 'Agendamento', 'Perícia', 'Laudo'];
@@ -65,7 +65,7 @@ const KanbanBoard: React.FC = () => {
                         <Grid item xs={12} style={{ padding: 0 }}>
                             <Box style={{ padding: '16px', height: '100vh', width: '100vw', boxSizing: 'border-box' }}>
                                 <CaseForm
-                                    card={selectedCard}
+                                    cardId={selectedCardId}
                                     onClose={handleCloseForm}
                                     initialTab={activeTab}
                                 />
@@ -83,7 +83,7 @@ const KanbanBoard: React.FC = () => {
                             handleCardClick={handleCardClick}
                             setFormOpen={setFormOpen}
                             setActiveTab={setActiveTab}
-                            selectedCard={selectedCard} // Passe o selectedCard para KanbanColumn
+                            selectedCardId={selectedCardId} // Passe o selectedCardId para KanbanColumn
                         />
                     ))}
                 </Grid>
@@ -106,7 +106,7 @@ const KanbanBoard: React.FC = () => {
                         }}
                     >
                         <CaseForm
-                            card={selectedCard}
+                            cardId={selectedCardId}
                             onClose={handleCloseForm}
                             initialTab={activeTab}
                         />

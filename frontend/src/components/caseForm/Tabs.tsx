@@ -6,8 +6,8 @@ interface TabsProps {
     finalExpertiseDate: string;
     briefConclusion: string;
     expertiseReportUrl: string;
-    activeTab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise' | 'participants' | 'procedure' | 'parameters' | 'analysis' | 'briefConclusion';
-    setActiveTab: (tab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise' | 'participants' | 'procedure' | 'parameters' | 'analysis' | 'briefConclusion') => void;
+    activeTab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise';
+    setActiveTab: (tab: 'register' | 'scheduling' | 'report' | 'payment' | 'expertise') => void;
 }
 
 function Tabs({ cardStatus, finalExpertiseDate, briefConclusion, expertiseReportUrl, activeTab, setActiveTab }: TabsProps) {
