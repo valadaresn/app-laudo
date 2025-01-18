@@ -13,6 +13,7 @@ import ExpertiseFields from '../components/caseForm/ExpertiseFields';
 import PaymentFields from '../components/caseForm/PaymentFields';
 import ReportFields from '../components/caseForm/ReportFields';
 import { Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const defaultValues = CaseSchema.parse({
     register: {},
@@ -22,7 +23,12 @@ const defaultValues = CaseSchema.parse({
     expertise: {}
 });
 
-function CaseForm({ cardId }: { cardId: string | null; onClose: () => void }) {
+interface CaseFormProps {
+    cardId: string | null;
+    onClose?: () => void;
+}
+
+function CaseForm({ cardId, onClose }: CaseFormProps) {
     const methods = useForm<ICase>({
         resolver: zodResolver(CaseSchema),
         defaultValues
@@ -32,6 +38,7 @@ function CaseForm({ cardId }: { cardId: string | null; onClose: () => void }) {
     
     const [activeTab, setActiveTab] = useState<Status>('register');
     const initialValuesRef = useRef<ICase | null>(null);
+    const navigate = useNavigate();
 
     const finalExpertiseDate = watch('scheduling.finalExpertiseDate');
     const briefConclusion = watch('expertise.briefConclusion');
@@ -73,12 +80,17 @@ function CaseForm({ cardId }: { cardId: string | null; onClose: () => void }) {
             await addDoc(collection(db, 'cases'), currentValues);
         }
         reset(currentValues); 
+        if (onClose) {
+            onClose();
+        } else {
+            navigate('/');
+        }
     };
 
     return (
         <FormProvider {...methods}>
             <Container style={{ height: '80vh' }}>
-                <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId} />
+                <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
                 <Tabs
                     cardStatus={initialValuesRef.current?.status}                    
                     finalExpertiseDate={finalExpertiseDate}

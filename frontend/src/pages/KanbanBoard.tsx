@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
 import { Status, statusLabels } from '../models/Status';
-import { Container, Grid, Box, Typography, Modal, useTheme, useMediaQuery } from '@mui/material';
+import { Container, Grid, Typography, Modal, Box } from '@mui/material';
 import KanbanColumn from '../components/kanbam/KanbanColumn';
-import MobileKanbanColumn from '../components/kanbam/MobileKanbanColumn';
 
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
     const [cards, setCards] = useState<ICase[]>([]);
-    const [activeColumn, setActiveColumn] = useState<Status>('register');
 
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const navigate = useNavigate(); // Usar useNavigate para navegação
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'cases'), (snapshot) => {
@@ -38,10 +32,6 @@ const KanbanBoard: React.FC = () => {
         }
     };
 
-    const handleMobileCardClick = (card: ICase) => {
-        navigate(`/case-form/${card.id}`); // Navegar para a nova rota no modo mobile
-    };
-
     const handleCloseForm = () => {
         setFormOpen(false);
         setSelectedCardId(null);
@@ -54,51 +44,22 @@ const KanbanBoard: React.FC = () => {
             <Typography variant="h2" gutterBottom>
                 Kanban Board
             </Typography>
-            {isMobile ? (
-                <Grid container spacing={0} style={{ width: '100%', margin: 0 }}>
-                    <Grid item xs={12}>
-                        <MobileKanbanColumn
-                            activeColumn={activeColumn}
-                            cards={cards}
-                            handleCardClick={handleMobileCardClick} // Usar handleMobileCardClick no modo mobile
-                            setActiveColumn={setActiveColumn}
-                            setFormOpen={setFormOpen}
-                            selectedCardId={selectedCardId}
-                        />
-                    </Grid>
-                </Grid>
-            ) : (
-                <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
-                    {columns.map((column) => (
-                        <KanbanColumn
-                            key={column}
-                            title={column}
-                            label={statusLabels[column]}
-                            cards={cards}
-                            handleCardClick={handleCardClick}
-                            setFormOpen={setFormOpen}
-                            selectedCardId={selectedCardId}
-                        />
-                    ))}
-                </Grid>
-            )}
-            {isFormOpen && !isMobile && (
+            <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
+                {columns.map((column) => (
+                    <KanbanColumn
+                        key={column}
+                        title={column}
+                        label={statusLabels[column]}
+                        cards={cards}
+                        handleCardClick={handleCardClick}
+                        setFormOpen={setFormOpen}
+                        selectedCardId={selectedCardId}
+                    />
+                ))}
+            </Grid>
+            {isFormOpen && (
                 <Modal open={isFormOpen} onClose={handleCloseForm}>
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: '85%',
-                            maxHeight: '90%',
-                            bgcolor: 'background.paper',
-                            boxShadow: 24,
-                            p: 0,
-                            overflow: 'auto',
-                            maxWidth: 700
-                        }}
-                    >
+                    <Box className="modal-box">
                         <CaseForm
                             cardId={selectedCardId}
                             onClose={handleCloseForm}
@@ -106,6 +67,7 @@ const KanbanBoard: React.FC = () => {
                     </Box>
                 </Modal>
             )}
+
             <style>{`
                 .card {
                     cursor: pointer;
@@ -113,6 +75,19 @@ const KanbanBoard: React.FC = () => {
                 .card.active {
                     border-color: #007bff;
                     background-color: #e7f3ff;
+                }
+                .modal-box {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 85%;
+                    max-height: 90%;
+                    background-color: #fff;
+                    box-shadow: 24px;
+                    padding: 0;
+                    overflow: auto;
+                    max-width: 700px;
                 }
             `}</style>
         </Container>

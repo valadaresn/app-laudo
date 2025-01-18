@@ -5,7 +5,7 @@ import KanbanBoard from './pages/KanbanBoard';
 import MaterialTest from './pages/MaterialTest';
 import ExpertiseForm from './pages/ExpertiseForm';
 import Layout from './components/Layout';
-import theme from './theme';
+import theme from './styles/theme';
 
 function App() {
   return (
