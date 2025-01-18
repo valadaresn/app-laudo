@@ -46,11 +46,11 @@ export const ExpertiseSchema = z.object({
 export const CaseSchema = z.object({
     id: z.string().optional(),
     status: z.enum(StatusEnum).default('register'),
-    register: RegisterSchema,
-    scheduling: SchedulingSchema,
-    expertiseReport: ExpertiseReportSchema,
-    payment: PaymentSchema,
-    expertise: ExpertiseSchema.optional()
+    register: RegisterSchema.default({}),
+    scheduling: SchedulingSchema.default({}),
+    expertiseReport: ExpertiseReportSchema.default({}),
+    payment: PaymentSchema.default({}),
+    expertise: ExpertiseSchema.optional().default({})
 });
 
 export type IRegister = z.infer<typeof RegisterSchema>;
@@ -59,3 +59,6 @@ export type IExpertiseReport = z.infer<typeof ExpertiseReportSchema>;
 export type IPayment = z.infer<typeof PaymentSchema>;
 export type IExpertise = z.infer<typeof ExpertiseSchema>;
 export type ICase = z.infer<typeof CaseSchema>;
+
+// Definir os valores padrão usando os esquemas do Zod
+export const defaultValues: ICase = CaseSchema.parse({});

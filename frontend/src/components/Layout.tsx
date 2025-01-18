@@ -17,14 +17,15 @@ import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, ThemeProvider, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import themes from '../styles/theme'; // Import the themes
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-// Defina a largura do Drawer quando aberto e quando fechado
+// Define the width of the Drawer when open and closed
 const DRAWER_WIDTH_OPEN = 240;
 const DRAWER_WIDTH_CLOSED = 60;
 
@@ -37,10 +38,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 function Layout({ children }: LayoutProps) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Adicionado para detectar se é mobile
+  const themePurple = themes.purple; // Choose the purple theme
+  const isMobile = useMediaQuery(themePurple.breakpoints.down('sm')); // Detect if it's mobile
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [open, setOpen] = useState(true); // controla o Drawer permanente em telas grandes
+  const [open, setOpen] = useState(true); // Control the permanent Drawer on large screens
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -54,7 +55,7 @@ function Layout({ children }: LayoutProps) {
     <Box
       sx={{
         width: open ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSED,
-        bgcolor: open ? theme.palette.primary.main : '#fafafa',
+        bgcolor: open ? themePurple.palette.primary.main : '#fafafa',
       }}
     >
       <DrawerHeader />
@@ -76,80 +77,83 @@ function Layout({ children }: LayoutProps) {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      
-      {/* AppBar */}
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar>
-          <IconButton color="inherit" edge="start" onClick={handleDrawerToggle}>
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Meu Layout
-          </Typography>
-          <IconButton color="inherit" edge="end" onClick={handleDrawerOpen}>
-            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+    <ThemeProvider theme={themePurple}>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        
+        {/* AppBar */}
+        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+          <Toolbar>
+            <IconButton color="inherit" edge="start" onClick={handleDrawerToggle}>
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              Meu Layout
+            </Typography>
+            <IconButton color="inherit" edge="end" onClick={handleDrawerOpen}>
+              {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+          </Toolbar>
+        </AppBar>
 
-      {/* Drawer temporário (mobile) */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': {
-            width: DRAWER_WIDTH_OPEN,
-            boxSizing: 'border-box',
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
-
-      {/* Drawer permanente (desktop) */}
-      {!isMobile && ( // Adicionado para ocultar o Drawer em mobile
+        {/* Temporary Drawer (mobile) */}
         <Drawer
-          variant="permanent"
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
           sx={{
-            display: { xs: 'none', sm: 'block' },
+            display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': {
-              // Largura dinâmica conforme estado "open"
-              width: open ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSED,
+              width: DRAWER_WIDTH_OPEN,
               boxSizing: 'border-box',
-              bgcolor: open ? theme.palette.primary.main : '#fafafa',
+              bgcolor: themePurple.palette.primary.main,
             },
           }}
-          open={open}
         >
           {drawer}
         </Drawer>
-      )}
 
-      {/* Conteúdo principal */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          mt: 8,
-          // Ajuste a transição e a margin-left para não ficar atrás do Drawer
-          transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-          // Quando o Drawer estiver aberto, empurramos 240px.
-          // Quando fechado, empurramos 60px.
-          marginLeft: open ? `${DRAWER_WIDTH_OPEN}px` : `${DRAWER_WIDTH_CLOSED}px`,
-        }}
-      >
-        {children}
+        {/* Permanent Drawer (desktop) */}
+        {!isMobile && ( // Hide the Drawer on mobile
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': {
+                // Dynamic width based on "open" state
+                width: open ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSED,
+                boxSizing: 'border-box',
+                bgcolor: open ? themePurple.palette.primary.main : '#fafafa',
+              },
+            }}
+            open={open}
+          >
+            {drawer}
+          </Drawer>
+        )}
+
+        {/* Main content */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            mt: 8,
+            // Adjust transition and margin-left to not be behind the Drawer
+            transition: themePurple.transitions.create(['margin', 'width'], {
+              easing: themePurple.transitions.easing.sharp,
+              duration: themePurple.transitions.duration.leavingScreen,
+            }),
+            // When the Drawer is open, push 240px.
+            // When closed, push 60px.
+            marginLeft: open ? `${DRAWER_WIDTH_OPEN}px` : `${DRAWER_WIDTH_CLOSED}px`,
+          }}
+        >
+          {children}
+        </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 }
 

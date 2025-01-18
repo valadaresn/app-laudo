@@ -1,19 +1,19 @@
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
+const themePurple = createTheme({
   palette: {
     primary: {
-      main: '#7719AA', // Roxo principal mais próximo do OneNote
+      main: '#7719AA', // Purple main color close to OneNote
     },
     secondary: {
-      main: '#ff4081', // Rosa claro
+      main: '#ff4081', // Light pink
     },
     background: {
-      default: '#f5f5f5', // Cor de fundo padrão
+      default: '#f5f5f5', // Default background color
     },
     text: {
-      primary: '#212121', // Cor do texto principal
-      secondary: '#757575', // Cor do texto secundário
+      primary: '#212121', // Primary text color
+      secondary: '#757575', // Secondary text color
     },
   },
   typography: {
@@ -21,66 +21,52 @@ const theme = createTheme({
   },
 });
 
-export default theme;
+const themeBlue = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2', // Darker blue color from Angular Material
+    },
+    secondary: {
+      main: '#ff4081', // Light pink
+    },
+    background: {
+      default: '#f5f5f5', // Default background color
+    },
+    text: {
+      primary: '#212121', // Primary text color
+      secondary: '#757575', // Secondary text color
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+  },
+});
 
+const themePink = createTheme({
+  palette: {
+    primary: {
+      main: '#e91e63', // Pink main color from Angular Material
+    },
+    secondary: {
+      main: '#ff4081', // Light pink
+    },
+    background: {
+      default: '#f5f5f5', // Default background color
+    },
+    text: {
+      primary: '#212121', // Primary text color
+      secondary: '#757575', // Secondary text color
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+  },
+});
 
+const themes = {
+  purple: themePurple,
+  blue: themeBlue,
+  pink: themePink,
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { createTheme } from '@mui/material/styles';
-
-// const theme = createTheme({
-//   palette: {
-//     primary: {
-//       main: '#673ab7', // Roxo principal
-//     },
-//     secondary: {
-//       main: '#ff4081', // Rosa claro
-//     },
-//     background: {
-//       default: '#f5f5f5', // Cor de fundo padrão
-//     },
-//     text: {
-//       primary: '#212121', // Cor do texto principal
-//       secondary: '#757575', // Cor do texto secundário
-//     },
-//   },
-//   typography: {
-//     fontFamily: 'Roboto, Arial, sans-serif',
-//   },
-// });
-
-// export default theme;
-
-
-
-
-// import { createTheme } from '@mui/material/styles';
-
-// const theme = createTheme({
-//   palette: {
-//     primary: {
-//       main: '#e91e63', // Rosa principal
-//     },
-//     secondary: {
-//       main: '#f8bbd0', // Rosa claro
-//     },
-//   },
-// });
-
-// export default theme;
+export default themes;

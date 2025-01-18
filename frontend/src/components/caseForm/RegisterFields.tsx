@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, TextField, MenuItem } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import { ICase } from '../../models/ICase';
-import { StatusEnum, statusLabels } from '../../models/Status';
+import { Status, StatusEnum, statusLabels } from '../../models/Status';
 
 const RegisterFields: React.FC = () => {
-    const { register, formState: { errors }, getValues } = useFormContext<ICase>();
-    const status = getValues('status'); // Obter o valor inicial do campo 'status'
+    const { register, formState: { errors }, setValue, watch } = useFormContext<ICase>();
+    const status = watch('status') || 'register'; // Obter o valor inicial do campo 'status'
+
+    useEffect(() => {
+        register('status'); // Registrar o campo 'status'
+    }, [register]);
 
     return (
         <>
@@ -123,8 +127,8 @@ const RegisterFields: React.FC = () => {
                 <TextField
                     select
                     label="Status"
-                    {...register('status')}
-                    defaultValue={status} // Definir o valor inicial do campo 'status'
+                    value={status}
+                    onChange={(e) => setValue('status', e.target.value as Status)}
                     fullWidth
                     InputLabelProps={{
                         shrink: true,

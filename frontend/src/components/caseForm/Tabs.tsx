@@ -3,9 +3,6 @@ import { Tabs as MuiTabs, Tab as MuiTab } from '@mui/material';
 
 interface TabsProps {
     cardStatus: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment' | undefined;
-    finalExpertiseDate: string;
-    briefConclusion: string;
-    expertiseReportUrl: string;
     activeTab: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment';
     setActiveTab: (tab: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment') => void;
 }

@@ -1,134 +1,99 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ICase, CaseSchema } from '../models/ICase';
+import { useNavigate } from 'react-router-dom';
+import { ICase, defaultValues } from '../models/ICase';
 import { Status } from '../models/Status';
-import { db } from '../firebaseConfig';
-import { doc, updateDoc, addDoc, collection, onSnapshot } from 'firebase/firestore';
-import Tabs from '../components/caseForm/Tabs';
+import CaseService from '../services/CaseService';
+import { Container, Button } from '@mui/material';
 import FormHeader from '../components/caseForm/FormHeader';
+import Tabs from '../components/caseForm/Tabs';
 import RegisterFields from '../components/caseForm/RegisterFields';
 import SchedulingFields from '../components/caseForm/SchedulingFields';
 import ExpertiseFields from '../components/caseForm/ExpertiseFields';
-import PaymentFields from '../components/caseForm/PaymentFields';
 import ReportFields from '../components/caseForm/ReportFields';
-import { Container } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-
-const defaultValues = CaseSchema.parse({
-    register: {},
-    scheduling: {},
-    expertiseReport: {},
-    payment: {},
-    expertise: {}
-});
+import PaymentFields from '../components/caseForm/PaymentFields';
 
 interface CaseFormProps {
-    cardId: string | null;
-    onClose?: () => void;
+  cardId: string | null;
+  onClose?: () => void;  
 }
 
-function CaseForm({ cardId, onClose }: CaseFormProps) {
-    const methods = useForm<ICase>({
-        resolver: zodResolver(CaseSchema),
-        defaultValues
-    });
-    
-    const { handleSubmit, reset, watch, formState: { isDirty }, getValues } = methods;
-    
-    const [activeTab, setActiveTab] = useState<Status>('register');
-    const initialValuesRef = useRef<ICase | null>(null);
-    const navigate = useNavigate();
+const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
+  const methods = useForm<ICase>({ defaultValues });
+  const { handleSubmit, reset, formState: { isDirty }, getValues } = methods;
+  
+  const [activeTab, setActiveTab] = useState<Status>('register');
+  const initialValuesRef = useRef<ICase | null>(null);
+  const navigate = useNavigate();
 
-    const finalExpertiseDate = watch('scheduling.finalExpertiseDate');
-    const briefConclusion = watch('expertise.briefConclusion');
-    const expertiseReportUrl = watch('expertiseReport.expertiseReportUrl');
-
-    useEffect(() => {
-        if (cardId && typeof cardId === 'string') {
-            const docRef = doc(db, 'cases', cardId);
-            const unsubscribe = onSnapshot(docRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const cardData = snapshot.data() as ICase;
-                    console.log('Fetched card data:', cardData); // Log dos dados puxados
-                    reset(cardData);
-                    initialValuesRef.current = cardData;
-                    setActiveTab(cardData.status); // Definir a aba ativa com base no status
-                } else {
-                    console.log('No such document!');
-                    reset(defaultValues);
-                    initialValuesRef.current = defaultValues;
-                    setActiveTab('register'); // Definir a aba ativa como 'register' por padrão
-                }
-            });
-            return () => unsubscribe();
-        } else {
-            console.log('Invalid cardId or no cardId provided');
-            reset(defaultValues);
-            initialValuesRef.current = defaultValues;
-            setActiveTab('register'); // Definir a aba ativa como 'register' por padrão
+  useEffect(() => {
+    if (cardId) {
+      const unsubscribe = CaseService.getCaseById(cardId, (cardData) => {
+        // Se os dados do cartão existem, redefina o formulário com esses dados e defina a aba ativa com base no status do cartão
+        if (cardData) {
+          reset(cardData);
+          initialValuesRef.current = cardData;
+          setActiveTab(cardData.status);
+        } else {          
+          reset(defaultValues);
+          initialValuesRef.current = defaultValues;
+          setActiveTab('register');
         }
-    }, [cardId, reset]);
+      });
+      return () => unsubscribe();
+    } else {
+      reset(defaultValues);
+      initialValuesRef.current = defaultValues;
+      setActiveTab('register');
+    }
+  }, [cardId, reset]);
 
-    const handleSave = async () => {
-        const currentValues = getValues();
-        console.log('Saving current values:', currentValues); // Log dos valores atuais
-        if (cardId && typeof cardId === 'string') {
-            const docRef = doc(db, 'cases', cardId);
-            await updateDoc(docRef, currentValues);
-        } else {
-            await addDoc(collection(db, 'cases'), currentValues);
-        }
-        reset(currentValues); 
-        if (onClose) {
-            onClose();
-        } else {
-            navigate('/');
-        }
-    };
+  const handleSave = async () => {
+    const currentValues = getValues();
 
-    return (
-        <FormProvider {...methods}>
-            <Container style={{ height: '80vh' }}>
-                <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
-                <Tabs
-                    cardStatus={initialValuesRef.current?.status}                    
-                    finalExpertiseDate={finalExpertiseDate}
-                    briefConclusion={briefConclusion}
-                    expertiseReportUrl={expertiseReportUrl}
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                />
-                <form onSubmit={handleSubmit(handleSave)}>
-                    {activeTab === 'register' && (
-                        <RegisterFields />
-                    )}
-                    {activeTab === 'scheduling' && (
-                        <SchedulingFields />
-                    )}
-                    {activeTab === 'expertise' && (
-                        <ExpertiseFields />
-                    )}
-                    {activeTab === 'report' && (
-                        <ReportFields />
-                    )}
-                    {activeTab === 'payment' && (
-                        <PaymentFields />
-                    )}
-                </form>
-                <style>{`
-                    .form-container {
-                        padding: 20px;
-                        border: 1px solid #ccc;
-                        border-radius: 4px;
-                        background-color: #f4f4f4;
-                        max-width: 800px;
-                        margin: 20px auto;
-                    }
-                `}</style>
-            </Container>
-        </FormProvider>
-    );
-}
+    if (cardId) {
+      await CaseService.updateCase(cardId, currentValues);
+    } else {
+      await CaseService.addCase(currentValues);
+    }
+    reset(currentValues);
+    //se desktop ou mobile
+    if (onClose) {
+      onClose();      
+    } else {
+      navigate('/');
+    }
+  };
+
+  return (
+    <FormProvider {...methods}>
+      <Container style={{ height: '80vh' }}>
+        <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
+        <Tabs
+          cardStatus={initialValuesRef.current?.status}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+        <form onSubmit={handleSubmit(handleSave)}>
+          {activeTab === 'register' && (<RegisterFields /> )}
+          {activeTab === 'scheduling' && (<SchedulingFields />)}
+          {activeTab === 'expertise' && (<ExpertiseFields />)}
+          {activeTab === 'report' && (<ReportFields />)}
+          {activeTab === 'payment' && (<PaymentFields />)}
+          <Button type="submit" variant="contained" color="primary">
+            Salvar
+          </Button>
+        </form>
+        <style>{`
+          .form-container {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+          }
+        `}</style>
+      </Container>
+    </FormProvider>
+  );
+};
 
 export default CaseForm;

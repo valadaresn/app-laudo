@@ -30,7 +30,9 @@ function KanbanColumn({ title, label, cards, handleCardClick, setFormOpen, selec
                 sx={{
                     padding: '16px',
                     height: '100%',
-                    backgroundColor: '#f4f5f7', // Cor de fundo cinza claro
+                    //backgroundColor: '#d3d3d3', // Cor de fundo cinza mais escuro
+                    backgroundColor: '#dcdcdc', // Cor de fundo cinza mais escuro
+                    
                     borderRadius: '20px', // Cantos arredondados
                     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)', // Sombra leve
                 }}
