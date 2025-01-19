@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import { ICase, defaultValues } from '../models/ICase';
 import { Status } from '../models/Status';
 import CaseService from '../services/CaseService';
@@ -15,26 +14,24 @@ import PaymentFields from '../components/caseForm/PaymentFields';
 
 interface CaseFormProps {
   cardId: string | null;
-  onClose?: () => void;  
+  onClose?: () => void;
 }
 
 const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
   const methods = useForm<ICase>({ defaultValues });
   const { handleSubmit, reset, formState: { isDirty }, getValues } = methods;
-  
+
   const [activeTab, setActiveTab] = useState<Status>('register');
   const initialValuesRef = useRef<ICase | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (cardId) {
       const unsubscribe = CaseService.getCaseById(cardId, (cardData) => {
-        // Se os dados do cartão existem, redefina o formulário com esses dados e defina a aba ativa com base no status do cartão
         if (cardData) {
           reset(cardData);
           initialValuesRef.current = cardData;
           setActiveTab(cardData.status);
-        } else {          
+        } else {
           reset(defaultValues);
           initialValuesRef.current = defaultValues;
           setActiveTab('register');
@@ -57,17 +54,14 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
       await CaseService.addCase(currentValues);
     }
     reset(currentValues);
-    //se desktop ou mobile
     if (onClose) {
-      onClose();      
-    } else {
-      navigate('/');
+      onClose();
     }
   };
 
   return (
     <FormProvider {...methods}>
-      <Container style={{ height: '80vh' }}>
+      <Container style={{ height: '100vh', padding: 0 }}>
         <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
         <Tabs
           cardStatus={initialValuesRef.current?.status}
@@ -75,22 +69,24 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
           setActiveTab={setActiveTab}
         />
         <form onSubmit={handleSubmit(handleSave)}>
-          {activeTab === 'register' && (<RegisterFields /> )}
+          {activeTab === 'register' && (<RegisterFields />)}
           {activeTab === 'scheduling' && (<SchedulingFields />)}
           {activeTab === 'expertise' && (<ExpertiseFields />)}
           {activeTab === 'report' && (<ReportFields />)}
           {activeTab === 'payment' && (<PaymentFields />)}
+          <Button
+            type="button"
+            variant="outlined"
+            color="secondary"
+            onClick={onClose}
+            style={{ marginLeft: '8px' }}
+          >
+            Cancelar
+          </Button>          
           <Button type="submit" variant="contained" color="primary">
             Salvar
           </Button>
         </form>
-        <style>{`
-          .form-container {
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-          }
-        `}</style>
       </Container>
     </FormProvider>
   );
