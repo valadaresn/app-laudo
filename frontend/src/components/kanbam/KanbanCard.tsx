@@ -16,7 +16,8 @@ const KanbanCard: React.FC<KanbanCardProps> = ({ card, handleCardClick, isSelect
             className={`card ${isSelected ? 'active' : ''}`}
             onClick={() => handleCardClick(card)}
         >
-            <Card style={{ marginBottom: '10px', width: '100%', borderRadius: '8px' }}>
+            {/* <Card style={{ marginBottom: '10px', width: '100%', borderRadius: '8px' }}> */}
+            <Card style={{ marginBottom: '10px',  borderRadius: '8px' }}>
                 <CardContent>
                     <Typography variant="h6">
                         {`${card.register.plaintiff} vs ${card.register.defendant}`}

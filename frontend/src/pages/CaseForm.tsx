@@ -61,7 +61,8 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
 
   return (
     <FormProvider {...methods}>
-      <Container style={{ height: '100vh', padding: 0 }}>
+      {/* <Container style={{ height: '100vh', padding: 0, paddingLeft:10,  paddingRight:18 }}> */}
+      <Container style={{ height: '100vh', padding: 0}}>
         <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
         <Tabs
           cardStatus={initialValuesRef.current?.status}

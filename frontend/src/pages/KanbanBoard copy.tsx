@@ -43,7 +43,7 @@ const KanbanBoard: React.FC = () => {
             <Typography variant="h2" gutterBottom>
                 Kanban Board
             </Typography>
-            <Grid container spacing={3} style={{ width: '100%', margin: 0,  flexWrap: 'nowrap' }}>
+            <Grid container spacing={3} style={{ width: '100%', margin: 0 }}>
                 {columns.map((column) => (
                     <KanbanColumn
                         key={column}
@@ -84,7 +84,7 @@ const KanbanBoard: React.FC = () => {
                     max-height: 90%;
                     background-color: #fff;
                     box-shadow: 24px;
-                    padding: 16px;                                        
+                                        
                     overflow: auto;
                     max-width: 700px;
                     border: 1px solid #ccc; /* Adiciona uma borda cinza */

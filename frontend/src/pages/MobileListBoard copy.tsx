@@ -4,7 +4,7 @@ import { db } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { ICase } from '../models/ICase';
 import { Status, statusLabels } from '../models/Status';
-import { Container, Typography, Box, Button } from '@mui/material';
+import { Container, Grid, Typography, Box, Button } from '@mui/material';
 import KanbanCard from '../components/kanbam/KanbanCard';
 import CaseForm from './CaseForm';
 
@@ -47,8 +47,9 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
   };
 
   return (
-    <Container maxWidth={false} style={{ padding: 16 }}>
-      {/* <Container maxWidth={false} style={{ padding: 0 }}> */}
+    // <Container maxWidth={false} style={{ padding: 0, width: '100vw' }}>
+      <Container maxWidth={false} style={{ padding: 0 }}>
+      {/* <Container  > */}
       {selectedCardId ? (
         <CaseForm cardId={selectedCardId} onClose={handleCloseForm} />
       ) : (
@@ -56,18 +57,29 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
           <Typography variant="h2" gutterBottom>
             {statusLabels[activeColumn]}
           </Typography>
-          <Box style={{ boxSizing: 'border-box' }}>
-            {renderCards(activeColumn)}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                navigate('/case-form/new');
-              }}
-            >
-              Novo
-            </Button>
-          </Box>
+          <Grid container spacing={0} style={{ width: '100%', margin: 0 }}>          
+            <Grid item xs={12}>
+              <Box
+                style={{
+                  // paddingRight: '15px',
+                  // height: '100vh',
+                  // width: '100vw',
+                  boxSizing: 'border-box',
+                }}
+              >
+                {renderCards(activeColumn)}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    navigate('/case-form/new');
+                  }}
+                >
+                  Novo
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         </>
       )}
     </Container>
