@@ -122,7 +122,77 @@ const RegisterFields: React.FC = () => {
                         shrink: true,
                     }}
                 />
-            </Box>
+            </Box> 
+            <Box mb={2}>
+                <TextField
+                    label="URL do Processo PDF"
+                    {...register('register.casePdfUrl')}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </Box> 
+            <Box mb={2}>
+                <TextField
+                    label="URL do Processo PDF"
+                    {...register('register.casePdfUrl')}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </Box>  
+            <Box mb={2}>
+                <TextField
+                    label="URL do Processo PDF"
+                    {...register('register.casePdfUrl')}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </Box>       
+            <Box mb={2}>
+                <TextField
+                    label="URL do Processo PDF"
+                    {...register('register.casePdfUrl')}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </Box>  
+            <Box mb={2}>
+                <TextField
+                    label="URL do Processo PDF"
+                    {...register('register.casePdfUrl')}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </Box>   
+            <Box mb={2}>
+                <TextField
+                    label="URL do Processo PDF"
+                    {...register('register.casePdfUrl')}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </Box>  
+            <Box mb={2}>
+                <TextField
+                    label="URL do Processo PDF"
+                    {...register('register.casePdfUrl')}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </Box>                               
             <Box mb={2}>
                 <TextField
                     select

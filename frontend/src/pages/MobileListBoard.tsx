@@ -26,11 +26,12 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
   }, []);
 
   const handleCardClick = (card: ICase) => {
-    setSelectedCardId(card.id);
+    setSelectedCardId(card.id ?? null);
   };
 
   const handleCloseForm = () => {
     setSelectedCardId(null);
+    
   };
 
   const renderCards = (status: Status) => {
@@ -47,7 +48,7 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
   };
 
   return (
-    <Container maxWidth={false} style={{ padding: 16 }}>
+    <Container>
       {/* <Container maxWidth={false} style={{ padding: 0 }}> */}
       {selectedCardId ? (
         <CaseForm cardId={selectedCardId} onClose={handleCloseForm} />

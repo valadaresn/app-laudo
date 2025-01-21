@@ -9,14 +9,10 @@ import { statusLabels } from '../models/Status';
 import theme from '../styles/theme';
 
 const BottomNav = styled(BottomNavigation)(({ theme }) => ({
-  width: '100%',
-  position: 'fixed',
-  bottom: 0,
   backgroundColor: theme.palette.primary.main,
 }));
 
 const BottomNavAction = styled(BottomNavigationAction)(({ theme }) => ({
-  color: theme.palette.text.secondary,
   '&.Mui-selected': {
     color: theme.palette.common.white,
   },
@@ -49,8 +45,15 @@ function MobileLayout({ children }: MobileLayoutProps) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ pb: 7 }}>
-        {children}
+      {/*
+        Layout em coluna, altura total da tela.
+        A área de conteúdo é rolável (flex:1, overflowY:auto).
+        O BottomNav fica fixo ao final.
+      */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <Box sx={{ flex: 1, overflowY: 'auto' }}>
+          {children}
+        </Box>
         <BottomNav value={value} onChange={handleNavigationChange} showLabels>
           <BottomNavAction label={statusLabels.register} icon={<HomeIcon />} showLabel />
           <BottomNavAction label={statusLabels.scheduling} icon={<ScheduleIcon />} showLabel />

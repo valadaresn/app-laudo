@@ -3,7 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { ICase, defaultValues } from '../models/ICase';
 import { Status } from '../models/Status';
 import CaseService from '../services/CaseService';
-import { Container, Button } from '@mui/material';
+import { Container, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import FormHeader from '../components/caseForm/FormHeader';
 import Tabs from '../components/caseForm/Tabs';
 import RegisterFields from '../components/caseForm/RegisterFields';
@@ -11,10 +11,12 @@ import SchedulingFields from '../components/caseForm/SchedulingFields';
 import ExpertiseFields from '../components/caseForm/ExpertiseFields';
 import ReportFields from '../components/caseForm/ReportFields';
 import PaymentFields from '../components/caseForm/PaymentFields';
+import useOutsideClickHandler from '../components/caseForm/UseOutsideClickHandler';
+
 
 interface CaseFormProps {
   cardId: string | null;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
@@ -23,6 +25,9 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
 
   const [activeTab, setActiveTab] = useState<Status>('register');
   const initialValuesRef = useRef<ICase | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [onConfirm, setOnConfirm] = useState<() => void>(() => () => {});
 
   useEffect(() => {
     if (cardId) {
@@ -45,6 +50,15 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
     }
   }, [cardId, reset]);
 
+  useOutsideClickHandler(modalRef, () => {
+    if (isDirty) {
+      setOnConfirm(() => handleSave);
+      setOpenConfirmDialog(true);
+    } else {
+      onClose();
+    }
+  });
+
   const handleSave = async () => {
     const currentValues = getValues();
 
@@ -54,15 +68,26 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
       await CaseService.addCase(currentValues);
     }
     reset(currentValues);
-    if (onClose) {
+    onClose();
+  };
+
+  const handleClose = () => {
+    if (isDirty) {
+      setOnConfirm(() => handleSave);
+      setOpenConfirmDialog(true);
+    } else {
       onClose();
     }
   };
 
+  const handleConfirmClose = () => {
+    setOpenConfirmDialog(false);
+    onClose();
+  };
+
   return (
     <FormProvider {...methods}>
-      {/* <Container style={{ height: '100vh', padding: 0, paddingLeft:10,  paddingRight:18 }}> */}
-      <Container style={{ height: '100vh', padding: 0}}>
+      <Container ref={modalRef} style={{ height: '100vh', padding: 0, paddingBottom: '60px' }}>
         <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
         <Tabs
           cardStatus={initialValuesRef.current?.status}
@@ -70,25 +95,53 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
           setActiveTab={setActiveTab}
         />
         <form onSubmit={handleSubmit(handleSave)}>
+ 
           {activeTab === 'register' && (<RegisterFields />)}
           {activeTab === 'scheduling' && (<SchedulingFields />)}
           {activeTab === 'expertise' && (<ExpertiseFields />)}
           {activeTab === 'report' && (<ReportFields />)}
           {activeTab === 'payment' && (<PaymentFields />)}
-          <Button
+
+          <Button            
             type="button"
             variant="outlined"
             color="secondary"
-            onClick={onClose}
-            style={{ marginLeft: '8px' }}
+            onClick={handleClose}
+            style={{ marginLeft: '8px'}}
           >
             Cancelar
           </Button>          
           <Button type="submit" variant="contained" color="primary">
             Salvar
-          </Button>
+          </Button>          
+
         </form>
       </Container>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+      >
+        <DialogTitle>Confirmação</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Você tem alterações não salvas. Deseja salvar antes de sair?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmClose} color="secondary">
+            Não
+          </Button>
+          <Button
+            onClick={async () => {
+              await onConfirm();
+              setOpenConfirmDialog(false);
+            }}
+            color="primary"
+          >
+            Sim
+          </Button>
+        </DialogActions>
+      </Dialog>
     </FormProvider>
   );
 };
