@@ -11,6 +11,7 @@ const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
     const [cards, setCards] = useState<ICase[]>([]);
+    const [isExpertiseFormOpen, setExpertiseFormOpen] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'cases'), (snapshot) => {
@@ -43,7 +44,7 @@ const KanbanBoard: React.FC = () => {
             <Typography variant="h2" gutterBottom>
                 Kanban Board
             </Typography>
-            <Grid container spacing={3} style={{ width: '100%', margin: 0,  flexWrap: 'nowrap' }}>
+            <Grid container spacing={3} style={{ width: '100%', margin: 0, flexWrap: 'nowrap' }}>
                 {columns.map((column) => (
                     <KanbanColumn
                         key={column}
@@ -56,13 +57,17 @@ const KanbanBoard: React.FC = () => {
                     />
                 ))}
             </Grid>
-            {isFormOpen && (
-                <Modal open={isFormOpen} onClose={handleCloseForm}>
+            {/* {isFormOpen && !isExpertiseFormOpen && ( */}
+            {isFormOpen && (                
+                <Modal
+                    open={isFormOpen}
+                    onClose={(_, reason) => {
+                        if (reason === 'backdropClick') return; // Evita fechar ao clicar na backdrop
+                        handleCloseForm();
+                    }}
+                >
                     <Box className="modal-box">
-                        <CaseForm
-                            cardId={selectedCardId}
-                            onClose={handleCloseForm}
-                        />
+                        <CaseForm cardId={selectedCardId} onClose={handleCloseForm} />
                     </Box>
                 </Modal>
             )}
@@ -84,7 +89,7 @@ const KanbanBoard: React.FC = () => {
                     max-height: 90%;
                     background-color: #fff;
                     box-shadow: 24px;
-                    padding: 16px;                                        
+                    padding: 16px;                                      
                     overflow: auto;
                     max-width: 700px;
                     border: 1px solid #ccc; /* Adiciona uma borda cinza */

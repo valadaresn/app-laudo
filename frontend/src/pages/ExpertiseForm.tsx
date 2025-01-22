@@ -15,7 +15,11 @@ const defaultValues = CaseSchema.parse({
     expertise: {}
 });
 
-function ExpertiseForm() {
+interface ExpertiseFormProps {
+    onClose: () => void;
+}
+
+function ExpertiseForm({ onClose }: ExpertiseFormProps) {
     const { caseId } = useParams<{ caseId: string }>();
     const methods = useForm<ICase>({
         resolver: zodResolver(CaseSchema),
@@ -47,7 +51,7 @@ function ExpertiseForm() {
             <Container>
                 <MuiTabs
                     value={activeTab}
-                    onChange={(event, newValue) => setActiveTab(newValue)}
+                    onChange={(_, newValue) => setActiveTab(newValue)}
                     variant="scrollable"
                     scrollButtons="auto"
                 >
@@ -106,9 +110,14 @@ function ExpertiseForm() {
                         />
                     )}
                 </Box>
-                <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)}>
-                    Salvar Perícia
-                </Button>
+                <Box display="flex" justifyContent="space-between" mt={2}>
+                    <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)}>
+                        Salvar Perícia
+                    </Button>
+                    <Button variant="outlined" color="secondary" onClick={onClose}>
+                        Cancelar
+                    </Button>
+                </Box>
             </Container>
         </FormProvider>
     );

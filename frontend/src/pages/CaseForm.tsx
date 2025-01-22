@@ -11,8 +11,6 @@ import SchedulingFields from '../components/caseForm/SchedulingFields';
 import ExpertiseFields from '../components/caseForm/ExpertiseFields';
 import ReportFields from '../components/caseForm/ReportFields';
 import PaymentFields from '../components/caseForm/PaymentFields';
-import useOutsideClickHandler from '../components/caseForm/UseOutsideClickHandler';
-
 
 interface CaseFormProps {
   cardId: string | null;
@@ -25,7 +23,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
 
   const [activeTab, setActiveTab] = useState<Status>('register');
   const initialValuesRef = useRef<ICase | null>(null);
-  const modalRef = useRef<HTMLDivElement | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [onConfirm, setOnConfirm] = useState<() => void>(() => () => {});
 
@@ -49,15 +46,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
       setActiveTab('register');
     }
   }, [cardId, reset]);
-
-  useOutsideClickHandler(modalRef, () => {
-    if (isDirty) {
-      setOnConfirm(() => handleSave);
-      setOpenConfirmDialog(true);
-    } else {
-      onClose();
-    }
-  });
 
   const handleSave = async () => {
     const currentValues = getValues();
@@ -87,7 +75,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
 
   return (
     <FormProvider {...methods}>
-      <Container ref={modalRef} style={{ height: '100vh', padding: 0, paddingBottom: '60px' }}>
+      <Container style={{ height: '100vh', padding: 0, paddingBottom: '60px' }}>
         <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
         <Tabs
           cardStatus={initialValuesRef.current?.status}
@@ -95,32 +83,27 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
           setActiveTab={setActiveTab}
         />
         <form onSubmit={handleSubmit(handleSave)}>
- 
           {activeTab === 'register' && (<RegisterFields />)}
           {activeTab === 'scheduling' && (<SchedulingFields />)}
           {activeTab === 'expertise' && (<ExpertiseFields />)}
           {activeTab === 'report' && (<ReportFields />)}
           {activeTab === 'payment' && (<PaymentFields />)}
 
-          <Button            
+          <Button
             type="button"
             variant="outlined"
             color="secondary"
             onClick={handleClose}
-            style={{ marginLeft: '8px'}}
+            style={{ marginLeft: '8px' }}
           >
             Cancelar
-          </Button>          
+          </Button>
           <Button type="submit" variant="contained" color="primary">
             Salvar
-          </Button>          
-
+          </Button>
         </form>
       </Container>
-      <Dialog
-        open={openConfirmDialog}
-        onClose={() => setOpenConfirmDialog(false)}
-      >
+      <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
         <DialogTitle>Confirmação</DialogTitle>
         <DialogContent>
           <DialogContentText>
