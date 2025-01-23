@@ -40,7 +40,12 @@ export const ExpertiseSchema = z.object({
     procedure: z.string().default(''),
     parameters: z.string().default(''),
     analysis: z.string().default(''),
-    briefConclusion: z.string().default('')
+    briefConclusion: z.string().default(''),
+    location: z.string().default(''), // Add location field
+    caseId: z.string().default(''), // Add caseId field
+    plaintiff: z.string().default(''), // Add plaintiff field
+    defendant: z.string().default(''), // Add defendant field
+    dateTime: z.string().default('') // Add dateTime field    
 });
 
 export const CaseSchema = z.object({
@@ -50,14 +55,14 @@ export const CaseSchema = z.object({
     scheduling: SchedulingSchema.default({}),
     expertiseReport: ExpertiseReportSchema.default({}),
     payment: PaymentSchema.default({}),
-    expertise: ExpertiseSchema.optional().default({})
+    // expertise: ExpertiseSchema.optional().default({})
 });
 
 export type IRegister = z.infer<typeof RegisterSchema>;
 export type IScheduling = z.infer<typeof SchedulingSchema>;
 export type IExpertiseReport = z.infer<typeof ExpertiseReportSchema>;
 export type IPayment = z.infer<typeof PaymentSchema>;
-export type IExpertise = z.infer<typeof ExpertiseSchema>;
+export type IExpertise = z.infer<typeof ExpertiseSchema> & { id: string }; // Add id to IExpertise
 export type ICase = z.infer<typeof CaseSchema>;
 
 // Definir os valores padrão usando os esquemas do Zod

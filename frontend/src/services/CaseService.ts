@@ -8,6 +8,9 @@ class CaseService {
     const unsubscribe = onSnapshot(docRef, (snapshot) => {
       if (snapshot.exists()) {
         const cardData = snapshot.data() as ICase;
+
+        cardData.id = snapshot.id;
+
         callback(cardData);
       } else {
         callback(null);
