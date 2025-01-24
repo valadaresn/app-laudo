@@ -1,9 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { ICase, defaultValues } from '../models/ICase';
+import { ICase, IExpertise, defaultValues } from '../models/ICase';
 import { Status } from '../models/Status';
 import CaseService from '../services/CaseService';
-import { Container, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+  Container,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 import FormHeader from '../components/caseForm/FormHeader';
 import Tabs from '../components/caseForm/Tabs';
 import RegisterFields from '../components/caseForm/RegisterFields';
@@ -11,6 +25,10 @@ import SchedulingFields from '../components/caseForm/SchedulingFields';
 import ExpertiseFields from '../components/caseForm/ExpertiseFields';
 import ReportFields from '../components/caseForm/ReportFields';
 import PaymentFields from '../components/caseForm/PaymentFields';
+import ExpertiseForm from './ExpertiseForm';
+import Modal from '../components/Modal';
+import { db } from '../firebaseConfig';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 interface CaseFormProps {
   cardId: string | null;
@@ -19,19 +37,36 @@ interface CaseFormProps {
 
 const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
   const methods = useForm<ICase>({ defaultValues });
-  const { handleSubmit, reset, formState: { isDirty }, getValues } = methods;
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty }
+  } = methods;
 
   const [activeTab, setActiveTab] = useState<Status>('register');
   const initialValuesRef = useRef<ICase | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [onConfirm, setOnConfirm] = useState<() => void>(() => () => {});
 
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedExpertiseId, setSelectedExpertiseId] = useState<string | undefined>(undefined);
+  const [expertises, setExpertises] = useState<IExpertise[]>([]);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  /**
+   * Carrega o caso do banco e inicializa o formulário
+   */
   useEffect(() => {
     if (cardId) {
       const unsubscribe = CaseService.getCaseById(cardId, (cardData) => {
         if (cardData) {
-          reset(cardData);
-          initialValuesRef.current = cardData;
+          reset({
+            ...cardData,
+            id: cardId // Define o id explicitamente no formulário
+          });
+          initialValuesRef.current = { ...cardData, id: cardId };
           setActiveTab(cardData.status);
         } else {
           reset(defaultValues);
@@ -47,18 +82,48 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
     }
   }, [cardId, reset]);
 
+  /**
+   * Busca as perícias relacionadas ao caso usando diretamente o cardId
+   */
+  useEffect(() => {
+    if (cardId) {
+      console.log('Fetching expertises for caseId:', cardId);
+      const q = query(collection(db, 'expertises'), where('caseId', '==', cardId));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const expertiseList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        })) as IExpertise[];
+        console.log('Fetched expertises:', expertiseList);
+        setExpertises(expertiseList);
+      });
+
+      return () => unsubscribe();
+    } else {
+      console.log('No caseId found');
+    }
+  }, [cardId]);
+
+  /**
+   * Salva o formulário (atualização ou criação)
+   */
   const handleSave = async () => {
-    const currentValues = getValues();
+    const currentValues = methods.getValues();
 
     if (cardId) {
+      // Atualiza o caso existente
       await CaseService.updateCase(cardId, currentValues);
     } else {
+      // Cria um novo caso
       await CaseService.addCase(currentValues);
     }
     reset(currentValues);
     onClose();
   };
 
+  /**
+   * Verifica se há alterações não salvas ao fechar
+   */
   const handleClose = () => {
     if (isDirty) {
       setOnConfirm(() => handleSave);
@@ -73,36 +138,91 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
     onClose();
   };
 
+  /**
+   * Controla abertura/fechamento do Modal de Expertise
+   */
+  const handleOpenModal = (expertiseId: string | undefined = undefined) => {
+    setSelectedExpertiseId(expertiseId);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <FormProvider {...methods}>
-      <Container style={{ height: '100vh', padding: 0, paddingBottom: '60px' }}>
-        <FormHeader isDirty={isDirty} handleSave={handleSave} cardId={cardId || null} />
-        <Tabs
-          cardStatus={initialValuesRef.current?.status}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
-        <form onSubmit={handleSubmit(handleSave)}>
-          {activeTab === 'register' && (<RegisterFields />)}
-          {activeTab === 'scheduling' && (<SchedulingFields />)}
-          {activeTab === 'expertise' && (<ExpertiseFields />)}
-          {activeTab === 'report' && (<ReportFields />)}
-          {activeTab === 'payment' && (<PaymentFields />)}
+      {!isModalOpen && (
+        <Container style={{ height: '100vh', padding: 0, paddingBottom: '60px' }}>
+          <FormHeader
+            isDirty={isDirty}
+            handleSave={handleSave}
+            cardId={cardId || null}
+          />
 
-          <Button
-            type="button"
-            variant="outlined"
-            color="secondary"
-            onClick={handleClose}
-            style={{ marginLeft: '8px' }}
-          >
-            Cancelar
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            Salvar
-          </Button>
-        </form>
-      </Container>
+          <Tabs
+            cardStatus={initialValuesRef.current?.status}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+
+          <form onSubmit={handleSubmit(handleSave)}>
+            {activeTab === 'register' && <RegisterFields />}
+            {activeTab === 'scheduling' && <SchedulingFields />}
+
+            {activeTab === 'expertise' && (
+              <>
+                <ExpertiseFields />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleOpenModal(undefined)}
+                  style={{ marginTop: '16px' }}
+                >
+                  Realizar Perícia
+                </Button>
+
+                <List>
+                  {expertises.map((expertise) => (
+                    <ListItem key={expertise.id} disablePadding>
+                      <ListItemButton onClick={() => handleOpenModal(expertise.id)}>
+                        <ListItemText primary={`Perícia em ${expertise.plaintiff}`} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </>
+            )}
+
+            {activeTab === 'report' && <ReportFields />}
+            {activeTab === 'payment' && <PaymentFields />}
+
+            <Button
+              type="button"
+              variant="outlined"
+              color="secondary"
+              onClick={handleClose}
+              style={{ marginLeft: '8px' }}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" variant="contained" color="primary">
+              Salvar
+            </Button>
+          </form>
+        </Container>
+      )}
+
+      {isModalOpen && (
+        isMobile ? (
+          <ExpertiseForm expertiseId={selectedExpertiseId} onClose={handleCloseModal} />
+        ) : (
+          <Modal open={isModalOpen} onClose={handleCloseModal}>
+            <ExpertiseForm expertiseId={selectedExpertiseId} onClose={handleCloseModal} />
+          </Modal>
+        )
+      )}
+
       <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
         <DialogTitle>Confirmação</DialogTitle>
         <DialogContent>
