@@ -1,22 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
-import { ThemeProvider, useTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import KanbanBoard from './pages/KanbanBoard';
-//import ExpertiseForm from './pages/ExpertiseForm';
-//import Layout from './components/Layout';
 import MobileLayout from './components/MobileLayout';
-import MobileListBoard from './pages/MobileListBoard'; // Importar MobileListBoard
-
-import CaseForm from './pages/CaseForm';
-//import theme from '../styles/theme';
+import MobileListBoard from './pages/MobileListBoard';
 import { Status } from './models/Status';
-import ExpertiseForm from './pages/ExpertiseForm';
 import Layout from './components/Layout';
-
-function CaseFormWrapper() {
-  const { cardId } = useParams<{ cardId: string }>();
-  return <CaseForm cardId={cardId ?? null} />;
-}
+import themes from './styles/theme';
+import AuthProvider from './components/auth/AuthProvider';
+import Login from './components/auth/Login';
+import Logout from './components/auth/Logout';
+import Register from './components/auth/Register';
 
 function MobileListBoardWrapper() {
   const { activeColumn } = useParams<{ activeColumn: string }>();
@@ -24,31 +18,35 @@ function MobileListBoardWrapper() {
 }
 
 function App() {
-  const theme = useTheme();
+  const theme = themes.purple;
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        {isMobile ? (
-          <MobileLayout>
-            <Routes>
-              <Route path="/" element={<KanbanBoard />} />              
-              <Route path="/expertise" element={<ExpertiseForm />} />             
-              <Route path="/case-form/:cardId" element={<CaseFormWrapper />} />
-              <Route path="/mobile-list/:activeColumn" element={<MobileListBoardWrapper />} /> {/* Ajustar rota para MobileListBoard */}
-            </Routes>
-          </MobileLayout>
-        ) : (
-          <Layout>
-          <Routes>
-            <Route path="/" element={<KanbanBoard />} />            
-            <Route path="/expertise" element={<ExpertiseForm />} />           
-            <Route path="/case-form/:cardId" element={<CaseFormWrapper />} />
-          </Routes>
-          </Layout>
-        )}
-      </Router>
+      <AuthProvider>
+        <Router>
+          {isMobile ? (
+            <MobileLayout>
+              <Routes>
+                <Route path="/" element={<KanbanBoard />} />
+                <Route path="/mobile-list/:activeColumn" element={<MobileListBoardWrapper />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/logout" element={<Logout />} />
+                <Route path="/register" element={<Register />} />
+              </Routes>
+            </MobileLayout>
+          ) : (
+            <Layout>
+              <Routes>
+                <Route path="/" element={<KanbanBoard />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/logout" element={<Logout />} />
+                <Route path="/register" element={<Register />} />
+              </Routes>
+            </Layout>
+          )}
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

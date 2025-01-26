@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { styled, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { statusLabels } from '../models/Status';
-import theme from '../styles/theme';
 
 const BottomNav = styled(BottomNavigation)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -44,23 +43,16 @@ function MobileLayout({ children }: MobileLayoutProps) {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      {/*
-        Layout em coluna, altura total da tela.
-        A área de conteúdo é rolável (flex:1, overflowY:auto).
-        O BottomNav fica fixo ao final.
-      */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <Box sx={{ flex: 1, overflowY: 'auto' }}>
-          {children}
-        </Box>
-        <BottomNav value={value} onChange={handleNavigationChange} showLabels>
-          <BottomNavAction label={statusLabels.register} icon={<HomeIcon />} showLabel />
-          <BottomNavAction label={statusLabels.scheduling} icon={<ScheduleIcon />} showLabel />
-          <BottomNavAction label={statusLabels.expertise} icon={<AssignmentIcon />} showLabel />
-        </BottomNav>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <Box sx={{ flex: 1, overflowY: 'auto' }}>
+        {children}
       </Box>
-    </ThemeProvider>
+      <BottomNav value={value} onChange={handleNavigationChange} showLabels>
+        <BottomNavAction label={statusLabels.register} icon={<HomeIcon />} showLabel />
+        <BottomNavAction label={statusLabels.scheduling} icon={<ScheduleIcon />} showLabel />
+        <BottomNavAction label={statusLabels.expertise} icon={<AssignmentIcon />} showLabel />
+      </BottomNav>
+    </Box>
   );
 }
 

@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, FormProvider, useFormContext } from 'react-hook-form';
 import { Container, Tabs as MuiTabs, Tab as MuiTab, Box, TextField, Button } from '@mui/material';
 import { IExpertise, ExpertiseSchema, ICase } from '../models/ICase';
@@ -203,6 +203,11 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
                     </Button>
                 </Box>
             </Container>
+            <style>{`
+                .MuiTab-root {
+                    text-transform: none;
+                }
+            `}</style>
         </FormProvider>
     );
 }
