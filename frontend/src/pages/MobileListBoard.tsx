@@ -7,6 +7,7 @@ import { Status, statusLabels } from '../models/Status';
 import { Container, Typography, Box, Button } from '@mui/material';
 import KanbanCard from '../components/kanbam/KanbanCard';
 import CaseForm from './CaseForm';
+//import CaseForm from './CaseForm';
 
 interface MobileListBoardProps {
   activeColumn: Status;
@@ -51,7 +52,7 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
     <Container>
       {/* <Container maxWidth={false} style={{ padding: 0 }}> */}
       {selectedCardId ? (
-        <CaseForm cardId={selectedCardId} onClose={handleCloseForm} />
+        <CaseForm caseId={selectedCardId} onClose={handleCloseForm} />
       ) : (
         <>
           <Typography variant="h2" gutterBottom>

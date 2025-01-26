@@ -3,21 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { ICase, IExpertise, defaultValues } from '../models/ICase';
 import { Status } from '../models/Status';
 import CaseService from '../services/CaseService';
-import {
-  Container,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  useMediaQuery,
-  useTheme
-} from '@mui/material';
+import { Container,  Button,  Dialog,  DialogActions,  DialogContent,  DialogContentText,  DialogTitle,  List,  ListItem,  ListItemButton,  ListItemText,  useMediaQuery,  useTheme} from '@mui/material';
 import FormHeader from '../components/caseForm/FormHeader';
 import Tabs from '../components/caseForm/Tabs';
 import RegisterFields from '../components/caseForm/RegisterFields';
@@ -31,11 +17,11 @@ import { db } from '../firebaseConfig';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 interface CaseFormProps {
-  cardId: string | null;
+  caseId: string | null;
   onClose: () => void;
 }
 
-const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
+const CaseForm: React.FC<CaseFormProps> = ({ caseId, onClose }) => {
   const methods = useForm<ICase>({ defaultValues });
   const {
     handleSubmit,
@@ -59,14 +45,14 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
    * Carrega o caso do banco e inicializa o formulário
    */
   useEffect(() => {
-    if (cardId) {
-      const unsubscribe = CaseService.getCaseById(cardId, (cardData) => {
+    if (caseId) {
+      const unsubscribe = CaseService.getCaseById(caseId, (cardData) => {
         if (cardData) {
           reset({
             ...cardData,
-            id: cardId // Define o id explicitamente no formulário
+            id: caseId // Define o id explicitamente no formulário
           });
-          initialValuesRef.current = { ...cardData, id: cardId };
+          initialValuesRef.current = { ...cardData, id: caseId };
           setActiveTab(cardData.status);
         } else {
           reset(defaultValues);
@@ -80,15 +66,15 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
       initialValuesRef.current = defaultValues;
       setActiveTab('register');
     }
-  }, [cardId, reset]);
+  }, [caseId, reset]);
 
   /**
    * Busca as perícias relacionadas ao caso usando diretamente o cardId
    */
   useEffect(() => {
-    if (cardId) {
-      console.log('Fetching expertises for caseId:', cardId);
-      const q = query(collection(db, 'expertises'), where('caseId', '==', cardId));
+    if (caseId) {
+      console.log('Fetching expertises for caseId:', caseId);
+      const q = query(collection(db, 'expertises'), where('caseId', '==', caseId));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const expertiseList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -102,7 +88,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
     } else {
       console.log('No caseId found');
     }
-  }, [cardId]);
+  }, [caseId]);
 
   /**
    * Salva o formulário (atualização ou criação)
@@ -110,9 +96,9 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
   const handleSave = async () => {
     const currentValues = methods.getValues();
 
-    if (cardId) {
+    if (caseId) {
       // Atualiza o caso existente
-      await CaseService.updateCase(cardId, currentValues);
+      await CaseService.updateCase(caseId, currentValues);
     } else {
       // Cria um novo caso
       await CaseService.addCase(currentValues);
@@ -157,7 +143,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ cardId, onClose }) => {
           <FormHeader
             isDirty={isDirty}
             handleSave={handleSave}
-            cardId={cardId || null}
+            cardId={caseId || null}
           />
 
           <Tabs

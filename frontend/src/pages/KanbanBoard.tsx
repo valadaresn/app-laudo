@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import CaseForm from './CaseForm';
+//import CaseForm from './CaseForm';
 import { ICase } from '../models/ICase';
 import { Status, statusLabels } from '../models/Status';
 import { Container, Grid, Typography, Modal, Box } from '@mui/material';
 import KanbanColumn from '../components/kanbam/KanbanColumn';
+import CaseForm from './CaseForm';
+//import CaseForm from './CaseForm';
+
 
 const KanbanBoard: React.FC = () => {
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
     const [cards, setCards] = useState<ICase[]>([]);
-    const [isExpertiseFormOpen, setExpertiseFormOpen] = useState(false);
+    //const [isExpertiseFormOpen, setExpertiseFormOpen] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'cases'), (snapshot) => {
@@ -67,7 +70,7 @@ const KanbanBoard: React.FC = () => {
                     }}
                 >
                     <Box className="modal-box">
-                        <CaseForm cardId={selectedCardId} onClose={handleCloseForm} />
+                        <CaseForm caseId={selectedCardId} onClose={handleCloseForm} />
                     </Box>
                 </Modal>
             )}
