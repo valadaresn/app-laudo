@@ -3,12 +3,11 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { ICase } from '../models/ICase';
-import { Status, statusLabels } from '../models/Status'; // Corrigir o caminho da importação
+import { Status, statusLabels } from '../models/Status';
 import { Container, Typography, Box, Button } from '@mui/material';
 import KanbanCard from '../components/kanbam/KanbanCard';
 import CaseForm from './CaseForm';
-import MobileBottomNav from '../components/layout/MobileBottonNav';
-//import MobileBottomNav from '../components/layout/MobileBottomNav';
+//import CaseForm from './CaseForm';
 
 interface MobileListBoardProps {
   activeColumn: Status;
@@ -17,7 +16,6 @@ interface MobileListBoardProps {
 const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
   const [cards, setCards] = useState<ICase[]>([]);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [navValue, setNavValue] = useState<Status>(activeColumn);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +32,7 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
 
   const handleCloseForm = () => {
     setSelectedCardId(null);
+    
   };
 
   const renderCards = (status: Status) => {
@@ -51,6 +50,7 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
 
   return (
     <Container>
+      {/* <Container maxWidth={false} style={{ padding: 0 }}> */}
       {selectedCardId ? (
         <CaseForm caseId={selectedCardId} onClose={handleCloseForm} />
       ) : (
@@ -70,7 +70,6 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
               Novo
             </Button>
           </Box>
-          <MobileBottomNav value={navValue} onChange={(_, newValue) => setNavValue(newValue)} />
         </>
       )}
     </Container>

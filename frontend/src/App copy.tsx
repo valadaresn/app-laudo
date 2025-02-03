@@ -26,7 +26,7 @@ function App() {
       <AuthProvider>
         <Router>
           {isMobile ? (
-             <MobileLayout>
+            <MobileLayout>
               <Routes>
                 <Route path="/" element={<KanbanBoard />} />
                 <Route path="/mobile-list/:activeColumn" element={<MobileListBoardWrapper />} />
@@ -34,7 +34,7 @@ function App() {
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/register" element={<Register />} />
               </Routes>
-             </MobileLayout>
+            </MobileLayout>
           ) : (
             <Layout>
               <Routes>
