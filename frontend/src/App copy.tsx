@@ -5,7 +5,7 @@ import KanbanBoard from './pages/KanbanBoard';
 import MobileLayout from './components/MobileLayout';
 import MobileListBoard from './pages/MobileListBoard';
 import { Status } from './models/Status';
-import Layout from './components/Layout';
+import DesktopLayout from './components/layout/desktop/DesktopLayout';
 import themes from './styles/theme';
 import AuthProvider from './components/auth/AuthProvider';
 import Login from './components/auth/Login';
@@ -36,14 +36,14 @@ function App() {
               </Routes>
             </MobileLayout>
           ) : (
-            <Layout>
+            <DesktopLayout>
               <Routes>
                 <Route path="/" element={<KanbanBoard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/register" element={<Register />} />
               </Routes>
-            </Layout>
+            </DesktopLayout>
           )}
         </Router>
       </AuthProvider>

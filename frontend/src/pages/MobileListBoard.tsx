@@ -3,12 +3,15 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { ICase } from '../models/ICase';
-import { Status, statusLabels } from '../models/Status'; // Corrigir o caminho da importação
-import { Container, Typography, Box, Button } from '@mui/material';
+import { Status, statusLabels } from '../models/Status';
+import { Container, Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import KanbanCard from '../components/kanbam/KanbanCard';
 import CaseForm from './CaseForm';
-import MobileBottomNav from '../components/layout/MobileBottonNav';
-//import MobileBottomNav from '../components/layout/MobileBottomNav';
+import MobileListHeader from '../components/layout/mobile/MobileListHeader';
+//import MobileBottomNav from '../components/layout/MobileBottonNav';
+import MobileMenu from '../components/layout/mobile/MobileMenu';
+import MobileListBottomNav from '../components/layout/mobile/MobileListBottonNav';
+
 
 interface MobileListBoardProps {
   activeColumn: Status;
@@ -18,7 +21,10 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
   const [cards, setCards] = useState<ICase[]>([]);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [navValue, setNavValue] = useState<Status>(activeColumn);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'cases'), (snapshot) => {
@@ -36,6 +42,18 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
     setSelectedCardId(null);
   };
 
+  const handleMenuClick = () => {
+    setMenuOpen(true);
+  };
+
+  const handleMenuClose = () => {
+    setMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    // Lógica para logout
+  };
+
   const renderCards = (status: Status) => {
     return cards
       .filter((card) => card.status === status)
@@ -50,14 +68,13 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
   };
 
   return (
-    <Container>
+    <Container style={{ paddingTop: isMobile ? '60px' : 0 }}>
+      {isMobile && <MobileListHeader title={statusLabels[activeColumn]} onMenuClick={handleMenuClick} />}
+      {menuOpen && <MobileMenu onLogout={handleLogout} onClose={handleMenuClose} />}
       {selectedCardId ? (
         <CaseForm caseId={selectedCardId} onClose={handleCloseForm} />
       ) : (
         <>
-          <Typography variant="h2" gutterBottom>
-            {statusLabels[activeColumn]}
-          </Typography>
           <Box style={{ boxSizing: 'border-box' }}>
             {renderCards(activeColumn)}
             <Button
@@ -70,7 +87,7 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
               Novo
             </Button>
           </Box>
-          <MobileBottomNav value={navValue} onChange={(_, newValue) => setNavValue(newValue)} />
+          <MobileListBottomNav value={navValue} onChange={(_, newValue) => setNavValue(newValue)} />
         </>
       )}
     </Container>

@@ -6,14 +6,14 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { Status, statusLabels } from '../../models/Status';
+import { Status, statusLabels } from '../../../models/Status';
 
-interface MobileBottomNavProps {
+interface MobileListBottomNavProps {
   value: Status;
   onChange: (event: React.SyntheticEvent, newValue: Status) => void;
 }
 
-const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ value, onChange }) => {
+const MobileListBottomNav: React.FC<MobileListBottomNavProps> = ({ value, onChange }) => {
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -98,4 +98,4 @@ const bottomNavActionStyles = {
   },
 };
 
-export default MobileBottomNav;
+export default MobileListBottomNav;

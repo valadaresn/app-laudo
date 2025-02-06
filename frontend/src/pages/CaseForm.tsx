@@ -4,7 +4,8 @@ import { FormProvider } from 'react-hook-form';
 import ExpertiseForm from './ExpertiseForm';
 import Modal from '../components/Modal';
 import { useCaseForm } from '../hooks/useCaseForm';
-import FormHeader from '../components/caseForm/FormHeader';
+//import DesktopFormHeader from '../components/layout/DesktopFormHeader';
+import MobileFormHeader from '../components/layout/mobile/MobileFormHeader';
 import Tabs from '../components/caseForm/Tabs';
 import RegisterFields from '../components/caseForm/RegisterFields';
 import SchedulingFields from '../components/caseForm/SchedulingFields';
@@ -14,6 +15,8 @@ import PaymentFields from '../components/caseForm/PaymentFields';
 import { defaultValues } from '../models/ICase';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import ExpertiseList from '../components/caseForm/ExpertiseList';
+import MobileFormBottomNav from '../components/layout/mobile/MobileFormBottomNav';
+import DesktopFormHeader from '../components/layout/desktop/DesktopFormHeader';
 
 interface CaseFormProps {
   caseId: string | null;
@@ -60,34 +63,32 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseId, onClose }) => {
   return (
     <FormProvider {...methods}>
       {!isModalOpen && (
-        <Container style={{ height: '100vh', padding: 0, paddingBottom: '60px' }}>
-          <FormHeader isDirty={isDirty} handleSave={handleSaveAndClose} cardId={caseId || null} />
-          <Tabs cardStatus={methods.getValues().status} activeTab={activeTab} setActiveTab={setActiveTab} />
-          <form onSubmit={methods.handleSubmit(handleSaveAndClose)}>
-            {activeTab === 'register' && <RegisterFields />}
-            {activeTab === 'scheduling' && <SchedulingFields />}
-            {activeTab === 'expertise' && (
-              <>
-                <ExpertiseFields />
-                <Button variant="contained" color="primary" onClick={() => handleOpenModal(undefined)} style={{ marginTop: '16px' }}>
-                  Realizar Perícia
-                </Button>
-                <ExpertiseList caseId={caseId!} onExpertiseSelect={handleOpenModal} />
-              </>
-            )}
-            {activeTab === 'report' && <ReportFields />}
-            {activeTab === 'payment' && <PaymentFields />}
-            <Button type="button" variant="outlined" color="secondary" onClick={handleClose} style={{ marginLeft: '8px' }}>
-              Cancelar
-            </Button>
-            <Button type="button" variant="outlined" color="inherit" onClick={onClose} style={{ marginLeft: '8px' }}>
-              Fechar
-            </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Salvar
-            </Button>
-          </form>
-        </Container>
+        <>
+          {isMobile ? (
+            <MobileFormHeader title="Processo" onClose={handleClose} />
+          ) : (
+            <DesktopFormHeader title="Processo" onClose={handleClose} onCancel={handleClose} onSave={handleSaveAndClose} isDirty={isDirty} />
+          )}
+          <Container style={{ height: '100vh', padding: 0, paddingTop: isMobile ? '60px' : '80px', paddingBottom: '60px' }}>
+            <Tabs cardStatus={methods.getValues().status} activeTab={activeTab} setActiveTab={setActiveTab} />
+            <form onSubmit={methods.handleSubmit(handleSaveAndClose)}>
+              {activeTab === 'register' && <RegisterFields />}
+              {activeTab === 'scheduling' && <SchedulingFields />}
+              {activeTab === 'expertise' && (
+                <>
+                  <ExpertiseFields />
+                  <Button variant="contained" color="primary" onClick={() => handleOpenModal(undefined)} style={{ marginTop: '16px' }}>
+                    Realizar Perícia
+                  </Button>
+                  <ExpertiseList caseId={caseId!} onExpertiseSelect={handleOpenModal} />
+                </>
+              )}
+              {activeTab === 'report' && <ReportFields />}
+              {activeTab === 'payment' && <PaymentFields />}
+            </form>
+          </Container>
+          {isMobile && <MobileFormBottomNav onCancel={handleClose} onSave={handleSaveAndClose} />}
+        </>
       )}
       {isModalOpen && (
         isMobile ? (

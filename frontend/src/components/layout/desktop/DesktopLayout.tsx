@@ -1,18 +1,5 @@
 import React, { useState } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Drawer,
-  Box,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  CssBaseline,
-  Button,
-} from '@mui/material';
+import {  AppBar,  Toolbar,  Typography,  IconButton,  Drawer,  Box,  List,  ListItemButton,  ListItemIcon,  ListItemText,  CssBaseline,  Button,} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -22,10 +9,10 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { styled, ThemeProvider } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
-import themes from '../styles/theme';
-import { useAuth } from './auth/authContext';
+import themes from '../../../styles/theme';
+import { useAuth } from '../../auth/authContext';
 
-interface LayoutProps {
+interface DesktopLayoutProps {
   children: React.ReactNode;
 }
 
@@ -40,7 +27,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-function Layout({ children }: LayoutProps) {
+function DesktopLayout({ children }: DesktopLayoutProps) {
   const themePurple = themes.purple;
   const [open, setOpen] = useState(true);
   const { user, logout } = useAuth();
@@ -145,4 +132,4 @@ function Layout({ children }: LayoutProps) {
   );
 }
 
-export default Layout;
+export default DesktopLayout;
