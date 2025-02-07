@@ -93,7 +93,7 @@ const KanbanBoard: React.FC = () => {
                     background-color: #fff;
                     box-shadow: 24px;
                     padding: 16px;                                      
-                    overflow: auto;
+                    
                     max-width: 700px;
                     border: 1px solid #ccc; /* Adiciona uma borda cinza */
                 }

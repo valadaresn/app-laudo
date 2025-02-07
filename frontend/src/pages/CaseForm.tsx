@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Container, Button, useMediaQuery, useTheme } from '@mui/material';
+import { Button, useMediaQuery, useTheme, Box } from '@mui/material';
 import { FormProvider } from 'react-hook-form';
 import ExpertiseForm from './ExpertiseForm';
 import Modal from '../components/Modal';
 import { useCaseForm } from '../hooks/useCaseForm';
-//import DesktopFormHeader from '../components/layout/DesktopFormHeader';
 import MobileFormHeader from '../components/layout/mobile/MobileFormHeader';
+import DesktopFormHeader from '../components/layout/desktop/DesktopFormHeader';
 import Tabs from '../components/caseForm/Tabs';
 import RegisterFields from '../components/caseForm/RegisterFields';
 import SchedulingFields from '../components/caseForm/SchedulingFields';
@@ -16,7 +16,6 @@ import { defaultValues } from '../models/ICase';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import ExpertiseList from '../components/caseForm/ExpertiseList';
 import MobileFormBottomNav from '../components/layout/mobile/MobileFormBottomNav';
-import DesktopFormHeader from '../components/layout/desktop/DesktopFormHeader';
 
 interface CaseFormProps {
   caseId: string | null;
@@ -65,41 +64,83 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseId, onClose }) => {
       {!isModalOpen && (
         <>
           {isMobile ? (
-            <MobileFormHeader title="Processo" onClose={handleClose} />
+            <>
+              <MobileFormHeader title="Processo" onClose={handleClose} />
+              <Box style={{ height: '100vh', padding: 0, paddingTop: '00px', paddingBottom: '120px', marginBottom: '00px' }}>
+                <Tabs cardStatus={methods.getValues().status} activeTab={activeTab} setActiveTab={setActiveTab} />
+                <form onSubmit={methods.handleSubmit(handleSaveAndClose)}>
+                  {activeTab === 'register' && <RegisterFields />}
+                  {activeTab === 'scheduling' && <SchedulingFields />}
+                  {activeTab === 'expertise' && (
+                    <>
+                      <ExpertiseFields />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleOpenModal(undefined)}
+                        style={{ marginTop: '16px' }}
+                      >
+                        Realizar Perícia
+                      </Button>
+                      <ExpertiseList caseId={caseId!} onExpertiseSelect={handleOpenModal} />
+                    </>
+                  )}
+                  {activeTab === 'report' && <ReportFields />}
+                  {activeTab === 'payment' && <PaymentFields />}
+                </form>
+              </Box>
+              <MobileFormBottomNav onCancel={handleClose} onSave={handleSaveAndClose} />
+            </>
           ) : (
-            <DesktopFormHeader title="Processo" onClose={handleClose} onCancel={handleClose} onSave={handleSaveAndClose} isDirty={isDirty} />
+            <>
+              {/* O DesktopFormHeader está fixo; o conteúdo rolável é gerenciado abaixo */}
+              <DesktopFormHeader  title="Processo" onClose={handleClose} onCancel={handleClose} onSave={handleSaveAndClose}  isDirty={isDirty} />
+              <Box
+                sx={{
+                  mt: '60px', // margem para compensar a altura do header fixo
+                  overflowY: 'auto',
+                  height: 'calc(100vh - 60px)', // 80px é a altura do header
+                  padding: '0 16px',
+                  maxHeight: '60vh',
+                            
+                  pb: '60px',
+                  
+                }}
+              >
+                <Tabs cardStatus={methods.getValues().status} activeTab={activeTab} setActiveTab={setActiveTab} />
+                <form onSubmit={methods.handleSubmit(handleSaveAndClose)}>
+                  {activeTab === 'register' && <RegisterFields />}
+                  {activeTab === 'scheduling' && <SchedulingFields />}
+                  {activeTab === 'expertise' && (
+                    <>
+                      <ExpertiseFields />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleOpenModal(undefined)}
+                        style={{ marginTop: '16px' }}
+                      >
+                        Realizar Perícia
+                      </Button>
+                      <ExpertiseList caseId={caseId!} onExpertiseSelect={handleOpenModal} />
+                    </>
+                  )}
+                  {activeTab === 'report' && <ReportFields />}
+                  {activeTab === 'payment' && <PaymentFields />}
+                </form>
+              </Box>
+            </>
           )}
-          <Container style={{ height: '100vh', padding: 0, paddingTop: isMobile ? '60px' : '80px', paddingBottom: '60px' }}>
-            <Tabs cardStatus={methods.getValues().status} activeTab={activeTab} setActiveTab={setActiveTab} />
-            <form onSubmit={methods.handleSubmit(handleSaveAndClose)}>
-              {activeTab === 'register' && <RegisterFields />}
-              {activeTab === 'scheduling' && <SchedulingFields />}
-              {activeTab === 'expertise' && (
-                <>
-                  <ExpertiseFields />
-                  <Button variant="contained" color="primary" onClick={() => handleOpenModal(undefined)} style={{ marginTop: '16px' }}>
-                    Realizar Perícia
-                  </Button>
-                  <ExpertiseList caseId={caseId!} onExpertiseSelect={handleOpenModal} />
-                </>
-              )}
-              {activeTab === 'report' && <ReportFields />}
-              {activeTab === 'payment' && <PaymentFields />}
-            </form>
-          </Container>
-          {isMobile && <MobileFormBottomNav onCancel={handleClose} onSave={handleSaveAndClose} />}
         </>
       )}
-      {isModalOpen && (
-        isMobile ? (
+      {isModalOpen &&
+        (isMobile ? (
           <ExpertiseForm expertiseId={selectedExpertiseId} onClose={handleCloseModal} />
         ) : (
           <Modal open={isModalOpen} onClose={handleCloseModal}>
             <ExpertiseForm expertiseId={selectedExpertiseId} onClose={handleCloseModal} />
           </Modal>
-        )
-      )}
-
+        ))}
       <ConfirmDialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)} onConfirm={onConfirm} />
     </FormProvider>
   );

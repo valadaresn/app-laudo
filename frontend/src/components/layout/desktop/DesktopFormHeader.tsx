@@ -11,19 +11,24 @@ interface DesktopFormHeaderProps {
   isDirty: boolean;
 }
 
-function DesktopFormHeader({ title, onClose, onCancel, onSave, isDirty }: DesktopFormHeaderProps) {
+const DesktopFormHeader: React.FC<DesktopFormHeaderProps> = ({
+  title,
+  onClose,
+  onCancel,
+  onSave,
+  isDirty,
+}) => {
   const theme = useTheme();
 
   return (
     <Box
+      // Adiciona a classe para que o MUI aplique os ajustes de padding nos elementos fixos
       sx={{
-        position: 'fixed', // fixa o header em relação à viewport
+        position: 'fixed',
         top: 0,
         left: 0,
-        width: '100vw',
-        margin: 0,
+        width: '100%',
         padding: '10px 20px',
-        boxSizing: 'border-box',
         backgroundColor: theme.palette.primary.main,
         color: '#FFFFFF',
         display: { xs: 'none', md: 'flex' },
@@ -32,7 +37,7 @@ function DesktopFormHeader({ title, onClose, onCancel, onSave, isDirty }: Deskto
         zIndex: 1300,
       }}
     >
-      <IconButton onClick={onClose} sx={{ color: '#FFFFFF', marginRight: '16px' }}>
+      <IconButton onClick={onClose} sx={{ color: '#FFFFFF', marginRight: '16px', ml: '-8px' }}>
         <ArrowBackIcon />
       </IconButton>
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -50,6 +55,6 @@ function DesktopFormHeader({ title, onClose, onCancel, onSave, isDirty }: Deskto
       )}
     </Box>
   );
-}
+};
 
 export default DesktopFormHeader;

@@ -4,7 +4,7 @@ import { db } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { ICase } from '../models/ICase';
 import { Status, statusLabels } from '../models/Status';
-import { Container, Box, Button, useMediaQuery, useTheme } from '@mui/material';
+import {  Box, Button, useMediaQuery, useTheme } from '@mui/material';
 import KanbanCard from '../components/kanbam/KanbanCard';
 import CaseForm from './CaseForm';
 import MobileListHeader from '../components/layout/mobile/MobileListHeader';
@@ -68,7 +68,7 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
   };
 
   return (
-    <Container style={{ paddingTop: isMobile ? '60px' : 0 }}>
+    <Box style={{ paddingTop: isMobile ? '65px' : 0 }}>
       {isMobile && <MobileListHeader title={statusLabels[activeColumn]} onMenuClick={handleMenuClick} />}
       {menuOpen && <MobileMenu onLogout={handleLogout} onClose={handleMenuClose} />}
       {selectedCardId ? (
@@ -90,7 +90,7 @@ const MobileListBoard: React.FC<MobileListBoardProps> = ({ activeColumn }) => {
           <MobileListBottomNav value={navValue} onChange={(_, newValue) => setNavValue(newValue)} />
         </>
       )}
-    </Container>
+    </Box>
   );
 };
 
