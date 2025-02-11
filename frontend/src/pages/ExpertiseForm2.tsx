@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
-import { Container, Tabs as MuiTabs, Tab as MuiTab, Box, TextField } from '@mui/material';
+import { Container, Tabs as MuiTabs, Tab as MuiTab, Box, TextField, Button } from '@mui/material';
 import { IExpertise, ExpertiseSchema, ICase } from '../models/ICase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { db } from '../firebaseConfig';
@@ -200,6 +200,14 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
               helperText={errors.briefConclusion?.message}
             />
           )}
+        </Box>
+        <Box display="flex" justifyContent="space-between" mt={2}>
+          <Button variant="contained" color="primary" onClick={handleSubmit(onSubmit)}>
+            Salvar Perícia
+          </Button>
+          <Button variant="outlined" color="secondary" onClick={onClose}>
+            Fechar
+          </Button>
         </Box>
       </Container>
       <style>{`
