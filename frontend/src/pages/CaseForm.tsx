@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, useMediaQuery, useTheme } from '@mui/material';
 import { useCaseForm } from '../hooks/useCaseForm';
-import { defaultValues } from '../models/ICase';
+//import { defaultValues } from '../models/ICase';
 import ExpertiseForm from './ExpertiseForm';
 import ExpertiseList from '../components/caseForm/ExpertiseList';
 import GenericForm from '../components/common/GenericForm';
@@ -23,7 +23,7 @@ interface CaseFormProps {
 }
 
 const CaseForm: React.FC<CaseFormProps> = ({ caseId, onClose }) => {
-  const { methods, handleSave, isDirty, activeTab, setActiveTab } = useCaseForm(caseId, defaultValues);
+  const { methods, handleSave, isDirty, activeTab, setActiveTab } = useCaseForm(caseId);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedExpertiseId, setSelectedExpertiseId] = useState<string | undefined>(undefined);
   const theme = useTheme();
