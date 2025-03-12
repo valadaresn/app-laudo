@@ -10,7 +10,7 @@ function PaymentFields() {
             <FormControlLabel
                 control={
                     <Checkbox
-                        {...register('payment.isPaid')}
+                        {...register('isPaid')}
                     />
                 }
                 label="Recebido"
@@ -19,9 +19,9 @@ function PaymentFields() {
                 <TextField
                     label="Valor Honorário"
                     type="number"
-                    {...register('payment.feeAmount')}
-                    error={!!errors.payment?.feeAmount}
-                    helperText={errors.payment?.feeAmount?.message}
+                    {...register('feeAmount')}
+                    error={!!errors.feeAmount}
+                    helperText={errors.feeAmount?.message}
                     fullWidth
                 />
             </div>

@@ -10,9 +10,12 @@ import RegisterFields from '../components/caseForm/RegisterFields';
 import SchedulingFields from '../components/caseForm/SchedulingFields';
 import ExpertiseFields from '../components/caseForm/ExpertiseFields';
 import ReportFields from '../components/caseForm/ReportFields';
+
 import PaymentFields from '../components/caseForm/PaymentFields';
 import Modal from '../components/Modal';
 import { FormProvider } from 'react-hook-form';
+import ComplementaryFields from '../components/caseForm/ComplementaryFields';
+//import ComplementaryFields from '../components/caseForm/ComplementaryFields';
 
 interface CaseFormProps {
   caseId: string | null;
@@ -64,16 +67,25 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseId, onClose }) => {
               </>
             )}
             {activeTab === 'report' && <ReportFields />}
+            {activeTab === 'complementary' && <ComplementaryFields />}
             {activeTab === 'payment' && <PaymentFields />}
           </form>
         </GenericForm>
       )}
       {isModalOpen && (
         isMobile ? (
-          <ExpertiseForm expertiseId={selectedExpertiseId} onClose={handleCloseModal} />
+          <ExpertiseForm 
+            expertiseId={selectedExpertiseId} 
+            caseId={caseId || undefined}
+            onClose={handleCloseModal} 
+          />
         ) : (
           <Modal open={isModalOpen} onClose={handleCloseModal}>
-            <ExpertiseForm expertiseId={selectedExpertiseId} onClose={handleCloseModal} />
+            <ExpertiseForm 
+              expertiseId={selectedExpertiseId} 
+              caseId={caseId || undefined}
+              onClose={handleCloseModal} 
+            />
           </Modal>
         )
       )}

@@ -6,9 +6,8 @@ function SchedulingFields() {
     const { register, formState: { errors }, watch } = useFormContext<ICase>();
 
     // Obter os valores dos campos booleanos
-    const contactsPerformed = watch('scheduling.contactsPerformed');
-    const expertiseDateConfirmedByPlaintiff = watch('scheduling.expertiseDateConfirmedByPlaintiff');
-    const expertiseDateConfirmedByDefendant = watch('scheduling.expertiseDateConfirmedByDefendant');
+    const contactsPerformed = watch('contactsPerformed');
+    const schedulingPetitionSent = watch('schedulingPetitionSent');
 
     return (
         <>
@@ -16,33 +15,33 @@ function SchedulingFields() {
                 <TextField
                     label="Data Sugerida pela IA"
                     type="date"
-                    {...register('scheduling.suggestedExpertiseDateAI')}
+                    {...register('suggestedExpertiseDateAI')}
                     fullWidth
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    error={!!errors.scheduling?.suggestedExpertiseDateAI}
-                    helperText={errors.scheduling?.suggestedExpertiseDateAI?.message}
+                    error={!!errors.suggestedExpertiseDateAI}
+                    helperText={errors.suggestedExpertiseDateAI?.message}
                 />
             </Box>
             <Box mb={2}>
                 <TextField
                     label="Data Sugerida pelo Perito"
                     type="date"
-                    {...register('scheduling.suggestedExpertiseDateExpert')}
+                    {...register('suggestedExpertiseDateExpert')}
                     fullWidth
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    error={!!errors.scheduling?.suggestedExpertiseDateExpert}
-                    helperText={errors.scheduling?.suggestedExpertiseDateExpert?.message}
+                    error={!!errors.suggestedExpertiseDateExpert}
+                    helperText={errors.suggestedExpertiseDateExpert?.message}
                 />
             </Box>
             <Box mb={2}>
                 <FormControlLabel
                     control={
                         <Switch
-                            {...register('scheduling.contactsPerformed')}
+                            {...register('contactsPerformed')}
                             checked={contactsPerformed}
                         />
                     }
@@ -50,38 +49,27 @@ function SchedulingFields() {
                 />
             </Box>
             <Box mb={2}>
-                <FormControlLabel
-                    control={
-                        <Switch
-                            {...register('scheduling.expertiseDateConfirmedByPlaintiff')}
-                            checked={expertiseDateConfirmedByPlaintiff}
-                        />
-                    }
-                    label="Data Confirmada pelo Reclamante"
-                />
-            </Box>
-            <Box mb={2}>
-                <FormControlLabel
-                    control={
-                        <Switch
-                            {...register('scheduling.expertiseDateConfirmedByDefendant')}
-                            checked={expertiseDateConfirmedByDefendant}
-                        />
-                    }
-                    label="Data Confirmada pelo Réu"
-                />
-            </Box>
-            <Box mb={2}>
                 <TextField
                     label="Data Definitiva da Perícia"
                     type="date"
-                    {...register('scheduling.finalExpertiseDate')}
+                    {...register('finalExpertiseDate')}
                     fullWidth
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    error={!!errors.scheduling?.finalExpertiseDate}
-                    helperText={errors.scheduling?.finalExpertiseDate?.message}
+                    error={!!errors.finalExpertiseDate}
+                    helperText={errors.finalExpertiseDate?.message}
+                />
+            </Box>
+            <Box mb={2}>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            {...register('schedulingPetitionSent')}
+                            checked={schedulingPetitionSent}
+                        />
+                    }
+                    label="Petição de Agendamento Enviada"
                 />
             </Box>
         </>

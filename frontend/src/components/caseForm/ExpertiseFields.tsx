@@ -13,12 +13,12 @@ function ExpertiseFields() {
       <TextField
         label="Data Perícia"
         type="date"
-        {...register('scheduling.finalExpertiseDate')}
+        {...register('finalExpertiseDate')}
         InputLabelProps={{
           shrink: true
         }}
-        error={!!errors.scheduling?.finalExpertiseDate}
-        helperText={errors.scheduling?.finalExpertiseDate?.message}
+        error={!!errors.finalExpertiseDate}
+        helperText={errors.finalExpertiseDate?.message}
       />
     </Box>
   );

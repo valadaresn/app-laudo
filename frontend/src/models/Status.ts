@@ -1,4 +1,4 @@
-export const StatusEnum = ['register', 'scheduling', 'expertise', 'report', 'payment'] as const;
+export const StatusEnum = ['register', 'scheduling', 'expertise', 'report', 'payment', 'complementary',] as const;
 export type Status = typeof StatusEnum[number];
 
 export const statusLabels: { [key in Status]: string } = {
@@ -6,5 +6,6 @@ export const statusLabels: { [key in Status]: string } = {
     scheduling: 'Agendamento',
     expertise: 'Perícia',
     report: 'Laudo',
-    payment: 'Recebimento'
+    payment: 'Recebimento',
+    complementary: 'L. Comp.',
 };

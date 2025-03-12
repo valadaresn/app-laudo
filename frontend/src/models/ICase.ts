@@ -1,69 +1,62 @@
 import { z } from 'zod';
 import { StatusEnum } from './Status';
 
-export const RegisterSchema = z.object({
-    plaintiff: z.string().default(''),
-    defendant: z.string().default(''),
-    expertiseIdentifier: z.string().default(''),
-    caseNumber: z.string().default(''),
-    hearingDate: z.string().default(''),
-    defendantLawyerEmail: z.string().default(''),
-    plaintiffLawyerEmail: z.string().default(''),
-    acceptedPerformed: z.boolean().default(false),
-    expertiseSubject: z.string().default(''),
-    casePdfUrl: z.string().default(''),
-    registerProgress: z.number().default(0)
-});
-
-export const SchedulingSchema = z.object({
-    suggestedExpertiseDateAI: z.string().default(''),
-    suggestedExpertiseDateExpert: z.string().default(''),
-    contactsPerformed: z.boolean().default(false),
-    expertiseDateConfirmedByPlaintiff: z.boolean().default(false),
-    expertiseDateConfirmedByDefendant: z.boolean().default(false),
-    finalExpertiseDate: z.string().default('')
-});
-
-export const ExpertiseReportSchema = z.object({
-    expertiseReportUrl: z.string().default(''),
-    expertiseReportSentAt: z.string().default(''),
-    expertiseReportProgress: z.number().default(0)
-});
-
-export const PaymentSchema = z.object({
-    isPaid: z.boolean().default(false),
-    feeAmount: z.number().default(0)
-});
-
+// Modelo para relatórios de perícia (mantido separado)
 export const ExpertiseSchema = z.object({
-    participants: z.string().default(''),
-    procedure: z.string().default(''),
-    parameters: z.string().default(''),
-    analysis: z.string().default(''),
-    briefConclusion: z.string().default(''),
-    location: z.string().default(''), // Add location field
-    caseId: z.string().default(''), // Add caseId field
-    plaintiff: z.string().default(''), // Add plaintiff field
-    defendant: z.string().default(''), // Add defendant field
-    dateTime: z.string().default('') // Add dateTime field    
+  participants: z.string().default(''),
+  procedure: z.string().default(''),
+  parameters: z.string().default(''),
+  analysis: z.string().default(''),
+  briefConclusion: z.string().default(''),
+  location: z.string().default(''),
+  caseId: z.string().default(''),
+  plaintiff: z.string().default(''),
+  defendant: z.string().default(''),
+  dateTime: z.string().default('')
 });
 
+export type IExpertise = z.infer<typeof ExpertiseSchema>;
+
+// Interface unificada para caso
 export const CaseSchema = z.object({
-    id: z.string().optional(),
-    status: z.enum(StatusEnum).default('register'),
-    register: RegisterSchema.default({}),
-    scheduling: SchedulingSchema.default({}),
-    expertiseReport: ExpertiseReportSchema.default({}),
-    payment: PaymentSchema.default({}),
-    // expertise: ExpertiseSchema.optional().default({})
+  id: z.string().optional(),
+  status: z.enum(StatusEnum).default('register'),
+
+  // Dados básicos do caso
+  plaintiff: z.string().default(''),
+  defendant: z.string().default(''),
+  expertiseIdentifier: z.string().default(''),
+  caseNumber: z.string().default(''),
+  defendantLawyerEmail: z.string().default(''),
+  plaintiffLawyerEmail: z.string().default(''),
+  acceptedPerformed: z.boolean().default(false),
+  expertiseSubject: z.string().default(''),
+  casePdfUrl: z.string().default(''),
+  registerProgress: z.number().default(0),
+
+  // Fase de agenda de perícia
+  suggestedExpertiseDateAI: z.string().default(''),
+  suggestedExpertiseDateExpert: z.string().default(''),
+  contactsPerformed: z.boolean().default(false),
+  finalExpertiseDate: z.string().default(''),
+  schedulingPetitionSent: z.boolean().default(false),
+
+  // Fase de relatório da perícia
+  expertiseReportUrl: z.string().default(''),
+  expertiseReportSentAt: z.string().default(''),
+  expertiseReportProgress: z.number().default(0),
+
+  // Fase de laudo complementar
+  complementaryReportUrl: z.string().default(''),
+  complementaryReportSentAt: z.string().default(''),
+
+
+  // Fase de pagamento
+  isPaid: z.boolean().default(false),
+  feeAmount: z.number().default(0)
 });
 
-export type IRegister = z.infer<typeof RegisterSchema>;
-export type IScheduling = z.infer<typeof SchedulingSchema>;
-export type IExpertiseReport = z.infer<typeof ExpertiseReportSchema>;
-export type IPayment = z.infer<typeof PaymentSchema>;
-export type IExpertise = z.infer<typeof ExpertiseSchema> & { id: string }; // Add id to IExpertise
 export type ICase = z.infer<typeof CaseSchema>;
 
-// Definir os valores padrão usando os esquemas do Zod
+// Valores padrão mesclados com o schema
 export const defaultValues: ICase = CaseSchema.parse({});

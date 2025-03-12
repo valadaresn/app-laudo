@@ -1,10 +1,11 @@
 import { useRef } from 'react';
 import { Tabs as MuiTabs, Tab as MuiTab } from '@mui/material';
+import { Status } from '../../models/Status';
 
 interface TabsProps {
-    cardStatus: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment' | undefined;
-    activeTab: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment';
-    setActiveTab: (tab: 'register' | 'scheduling' | 'expertise' | 'report' | 'payment') => void;
+    cardStatus: Status | undefined;
+    activeTab: Status;
+    setActiveTab: (tab: Status) => void;
 }
 
 function Tabs({ cardStatus, activeTab, setActiveTab }: TabsProps) {
@@ -30,6 +31,10 @@ function Tabs({ cardStatus, activeTab, setActiveTab }: TabsProps) {
 
                 {cardStatus === 'report' && (
                     <MuiTab key="report" label="Laudo" value="report" />
+                )}
+                
+                {cardStatus === 'complementary' && (
+                    <MuiTab key="complementary" label="Laudo Complementar" value="complementary" />
                 )}
 
                 {cardStatus === 'payment' && (

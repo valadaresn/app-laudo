@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useForm, useFormContext } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Container, Tabs as MuiTabs, Tab as MuiTab, Box, TextField } from '@mui/material';
-import { IExpertise, ExpertiseSchema, ICase } from '../models/ICase';
+import { IExpertise, ExpertiseSchema } from '../models/ICase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { db } from '../firebaseConfig';
 import { doc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
@@ -11,52 +11,84 @@ const defaultValues = ExpertiseSchema.parse({});
 
 interface ExpertiseFormProps {
   expertiseId?: string;
+  caseId?: string;  // Opcional porque podemos estar visualizando uma perícia existente
   onClose: () => void;
 }
 
-function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFormProps) {
+function ExpertiseForm({ expertiseId: initialExpertiseId, caseId, onClose }: ExpertiseFormProps) {
   const methods = useForm<IExpertise>({
     resolver: zodResolver(ExpertiseSchema),
     defaultValues
   });
 
   const { register, handleSubmit, formState: { errors }, reset } = methods;
-  const { getValues } = useFormContext<ICase>();
   const [activeTab, setActiveTab] = useState('dados');
   const [expertiseId, setExpertiseId] = useState(initialExpertiseId);
 
   useEffect(() => {
     if (expertiseId) {
+      // Carrega perícia existente
       const loadExpertise = async () => {
-        const docRef = doc(db, 'expertises', expertiseId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          reset(docSnap.data() as IExpertise);
+        try {
+          const docRef = doc(db, 'expertises', expertiseId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const expertiseData = docSnap.data() as IExpertise;
+            reset(expertiseData);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar perícia:", error);
         }
       };
       loadExpertise();
+    } else if (caseId) {
+      // Nova perícia - buscar dados do caso
+      const fetchCaseData = async () => {
+        try {
+          const docRef = doc(db, 'cases', caseId);
+          const docSnap = await getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            const caseData = docSnap.data();
+            // Definir os campos básicos
+            reset({
+              ...defaultValues,
+              plaintiff: caseData.plaintiff || '',
+              defendant: caseData.defendant || '',
+              caseId: caseId, // Importante: assegurar que o caseId seja definido
+              dateTime: caseData.finalExpertiseDate || ''
+            });
+          }
+        } catch (error) {
+          console.error("Erro ao buscar dados do caso:", error);
+        }
+      };
+      
+      fetchCaseData();
     } else {
-      const caseData = getValues();
-      reset({
-        plaintiff: caseData.register.plaintiff,
-        defendant: caseData.register.defendant,
-        caseId: caseData.id,
-        dateTime: caseData.scheduling.finalExpertiseDate
-      });
+      // Se não tem caseId nem expertiseId, usar valores padrão
+      reset(defaultValues);
     }
-  }, [expertiseId, reset, getValues]);
+  }, [expertiseId, reset, caseId]);
 
   const onSubmit = async (data: IExpertise) => {
     try {
+      // Garantir que o caseId está incluído nos dados
+      const expertiseData = { 
+        ...data,
+        caseId: caseId || data.caseId // Usar o caseId da prop se disponível, senão usar o do formulário
+      };
+      
       if (expertiseId) {
-        await setDoc(doc(db, 'expertises', expertiseId), data);
+        await setDoc(doc(db, 'expertises', expertiseId), expertiseData);
       } else {
-        const docRef = await addDoc(collection(db, 'expertises'), data);
+        const docRef = await addDoc(collection(db, 'expertises'), expertiseData);
         setExpertiseId(docRef.id);
       }
-      console.log('Expertise saved successfully');
+      console.log('Perícia salva com sucesso');
+      onClose();
     } catch (e) {
-      console.error('Error saving expertise:', e);
+      console.error('Erro ao salvar perícia:', e);
     }
   };
 
@@ -79,6 +111,7 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
           <MuiTab label="Participantes" value="participants" />
           <MuiTab label="Procedimento" value="procedure" />
           <MuiTab label="Parâmetro" value="parameters" />
+          <MuiTab label="Análise" value="analysis" />
           <MuiTab label="Conclusão" value="briefConclusion" />
         </MuiTabs>
         <Box mt={2} className="form-group">
@@ -87,7 +120,7 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
               <Box mb={2}>
                 <TextField
                   label="Autor"
-                  placeholder="Enter plaintiff details..."
+                  placeholder="Informe os detalhes do autor..."
                   {...register('plaintiff')}
                   fullWidth
                   error={!!errors.plaintiff}
@@ -100,7 +133,7 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
               <Box mb={2}>
                 <TextField
                   label="Réu"
-                  placeholder="Enter defendant details..."
+                  placeholder="Informe os detalhes do réu..."
                   {...register('defendant')}
                   fullWidth
                   error={!!errors.defendant}
@@ -125,22 +158,8 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
               </Box>
               <Box mb={2}>
                 <TextField
-                  label="Case ID"
-                  placeholder="Enter case ID..."
-                  {...register('caseId')}
-                  fullWidth
-                  disabled
-                  error={!!errors.caseId}
-                  helperText={errors.caseId?.message}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </Box>
-              <Box mb={2}>
-                <TextField
-                  label="Local Perícia"
-                  placeholder="Enter expertise location..."
+                  label="Local da Perícia"
+                  placeholder="Informe o local da perícia..."
                   {...register('location')}
                   fullWidth
                   error={!!errors.location}
@@ -150,12 +169,14 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
                   }}
                 />
               </Box>
+              {/* Campo caseId oculto */}
+              <input type="hidden" {...register('caseId')} />
             </>
           )}
           {activeTab === 'participants' && (
             <TextField
               label="Participantes"
-              placeholder="Enter participants details..."
+              placeholder="Informe os detalhes dos participantes..."
               {...register('participants')}
               multiline
               rows={15}
@@ -167,7 +188,7 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
           {activeTab === 'procedure' && (
             <TextField
               label="Procedimento"
-              placeholder="Enter procedure details..."
+              placeholder="Descreva o procedimento utilizado..."
               {...register('procedure')}
               multiline
               rows={15}
@@ -179,7 +200,7 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
           {activeTab === 'parameters' && (
             <TextField
               label="Parâmetros"
-              placeholder="Enter parameters details..."
+              placeholder="Informe os parâmetros da perícia..."
               {...register('parameters')}
               multiline
               rows={15}
@@ -188,10 +209,22 @@ function ExpertiseForm({ expertiseId: initialExpertiseId, onClose }: ExpertiseFo
               helperText={errors.parameters?.message}
             />
           )}
+          {activeTab === 'analysis' && (
+            <TextField
+              label="Análise"
+              placeholder="Descreva a análise realizada..."
+              {...register('analysis')}
+              multiline
+              rows={15}
+              fullWidth
+              error={!!errors.analysis}
+              helperText={errors.analysis?.message}
+            />
+          )}
           {activeTab === 'briefConclusion' && (
             <TextField
               label="Conclusão"
-              placeholder="Enter brief conclusion..."
+              placeholder="Informe a conclusão da perícia..."
               {...register('briefConclusion')}
               multiline
               rows={15}

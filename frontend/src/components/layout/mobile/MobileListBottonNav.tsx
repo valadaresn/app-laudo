@@ -4,6 +4,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DescriptionIcon from '@mui/icons-material/Description';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Status, statusLabels } from '../../../models/Status';
@@ -21,7 +22,7 @@ const MobileListBottomNav: React.FC<MobileListBottomNavProps> = ({ value, onChan
     onChange(event, newValue);
     switch (newValue) {
       case 'register':
-        navigate('/');
+        navigate('/mobile-list/register');
         break;
       case 'scheduling':
         navigate('/mobile-list/scheduling');
@@ -31,6 +32,9 @@ const MobileListBottomNav: React.FC<MobileListBottomNavProps> = ({ value, onChan
         break;
       case 'report':
         navigate('/mobile-list/report');
+        break;
+      case 'complementary':
+        navigate('/mobile-list/complementary');
         break;
       default:
         break;
@@ -42,13 +46,13 @@ const MobileListBottomNav: React.FC<MobileListBottomNavProps> = ({ value, onChan
       value={value}
       onChange={handleNavigationChange}
       showLabels
-      sx={{ 
-        position: 'fixed', 
-        bottom: 0, 
-        left: 0, 
-        right: 0, 
-        zIndex: 1000, 
-        backgroundColor: theme.palette.primary.main 
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        backgroundColor: theme.palette.primary.main
       }}
     >
       <BottomNavigationAction
@@ -59,7 +63,7 @@ const MobileListBottomNav: React.FC<MobileListBottomNavProps> = ({ value, onChan
         sx={bottomNavActionStyles}
       />
       <BottomNavigationAction
-        label={"Agend."}
+        label="Agend."
         icon={<ScheduleIcon />}
         value="scheduling"
         showLabel
@@ -79,6 +83,13 @@ const MobileListBottomNav: React.FC<MobileListBottomNavProps> = ({ value, onChan
         showLabel
         sx={bottomNavActionStyles}
       />
+      <BottomNavigationAction
+        label={statusLabels.complementary}
+        icon={<PostAddIcon />}
+        value="complementary"
+        showLabel
+        sx={bottomNavActionStyles}
+      />
     </BottomNavigation>
   );
 };
@@ -86,16 +97,14 @@ const MobileListBottomNav: React.FC<MobileListBottomNavProps> = ({ value, onChan
 const bottomNavActionStyles = {
   color: '#B0B0B0',
   '&.Mui-selected': {
-    color: '#FFFFFF',
+    color: '#FFFFFF'
   },
-  // Define o tamanho de fonte padrão
   '& .MuiBottomNavigationAction-label': {
-    fontSize: '12px',
+    fontSize: '12px'
   },
-  // Mantém o mesmo tamanho de fonte ao selecionar
   '&.Mui-selected .MuiBottomNavigationAction-label': {
-    fontSize: '12px',
-  },
+    fontSize: '12px'
+  }
 };
 
 export default MobileListBottomNav;
