@@ -3,7 +3,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { FormProvider, UseFormReturn, FieldValues } from 'react-hook-form';
 import MobileFormHeader from '../layout/mobile/MobileFormHeader';
 import DesktopFormHeader from '../layout/desktop/DesktopFormHeader';
-import MobileFormBottomNav from '../layout/mobile/MobileFormBottomNav';
+//import MobileFormBottomNav from '../layout/mobile/MobileFormBottomNav';
 import ConfirmDialog from './ConfirmDialog';
 
 interface GenericFormProps<T extends FieldValues> {
@@ -54,11 +54,11 @@ function GenericForm<T extends FieldValues>({
     <FormProvider {...formMethods}>
       {isMobile ? (
         <>
-          <MobileFormHeader title={title} onClose={handleClose} />
+          <MobileFormHeader title={title} onClose={handleClose} onSave={handleSaveAndClose} isDirty={isDirty}  />
           <Box style={{ height: '100vh', padding: 0, paddingTop: '00px', paddingBottom: '120px', marginBottom: '00px' }}>
             {children}
           </Box>
-          {isDirty && <MobileFormBottomNav onCancel={handleClose} onSave={handleSaveAndClose} />}
+          {/* {isDirty && <MobileFormBottomNav onCancel={handleClose} onSave={handleSaveAndClose} />} */}
         </>
       ) : (
         <>

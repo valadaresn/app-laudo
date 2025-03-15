@@ -1,13 +1,16 @@
 import { Box, IconButton, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SaveIcon from '@mui/icons-material/Save';
 import { useTheme } from '@mui/material/styles';
 
 interface MobileFormHeaderProps {
   title: string;
   onClose: () => void;
+  onSave?: () => void; // Optional save handler
+  isDirty?: boolean;   // Add isDirty prop
 }
 
-function MobileFormHeader({ title, onClose }: MobileFormHeaderProps) {
+function MobileFormHeader({ title, onClose, onSave, isDirty = false }: MobileFormHeaderProps) {
   const theme = useTheme();
 
   return (
@@ -32,6 +35,15 @@ function MobileFormHeader({ title, onClose }: MobileFormHeaderProps) {
       <Typography variant="h6" sx={{ marginLeft: '16px', flexGrow: 1 }}>
         {title}
       </Typography>
+      {onSave && isDirty && (
+        <IconButton 
+          onClick={onSave} 
+          sx={{ color: '#FFFFFF', marginRight: '16px' }}
+          aria-label="salvar"
+        >
+          <SaveIcon />
+        </IconButton>
+      )}
     </Box>
   );
 }
